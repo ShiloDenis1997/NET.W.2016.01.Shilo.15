@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // Управление общими сведениями о сборке осуществляется с помощью 
 // набора атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
-[assembly: AssemblyTitle("NET.W.2016.01.Shilo.15")]
+[assembly: AssemblyTitle("Task2.Logic")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("NET.W.2016.01.Shilo.15")]
+[assembly: AssemblyProduct("Task2.Logic")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // Следующий GUID служит для идентификации библиотеки типов, если этот проект будет видимым для COM
-[assembly: Guid("d7859b75-0dfa-4c09-96e2-e9253310d319")]
+[assembly: Guid("8a1d50a0-23a2-4ebe-874f-e6601ea561df")]
 
 // Сведения о версии сборки состоят из следующих четырех значений:
 //
