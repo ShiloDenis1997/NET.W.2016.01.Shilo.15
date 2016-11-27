@@ -626,5 +626,648 @@ namespace Task2.Logic.Tests
             Assert.AreEqual(i, expectedDataOrder.Length);
         }
         #endregion
+
+        #region Book tests
+        public class BookCustomComparer : IComparer<Book>
+        {
+            public int Compare(Book x, Book y)
+            {
+                return y.CompareTo(x);
+            }
+        }
+
+        public static IEnumerable<TestCaseData> CtorBookTestData
+        {
+            get
+            {
+                yield return new TestCaseData(new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("ad", "ad", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) }, 4,
+                    new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) }, new[] { new Book("bc", "bc", 2016, 12m), new Book("adf", "adf", 2016, 12m) }, null);
+                yield return new TestCaseData(new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("ad", "ad", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) }, 4,
+                    new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) }, new[] { new Book("bc", "bc", 2016, 12m), new Book("adf", "adf", 2016, 12m) },
+                    new BookCustomComparer());
+            }
+        }
+
+        [TestCaseSource(nameof(CtorBookTestData))]
+        [Test]
+        public void Ctor_BookArray_TreeWithUniqueElementsExpected
+            (Book[] array, int expectedCount, Book[] expectedElements, Book[] unexpectedElements,
+            IComparer<Book> comparer)
+        {
+            //act
+            BinarySearchTree<Book> actual = new BinarySearchTree<Book>(array, comparer);
+            //assert
+            Assert.AreEqual(expectedCount, actual.Count);
+            CollectionAssert.AreEquivalent(expectedElements, actual);
+            foreach (var item in unexpectedElements)
+            {
+                CollectionAssert.DoesNotContain(actual, item);
+            }
+        }
+
+        public static IEnumerable<TestCaseData> AddBookTestData
+        {
+            get
+            {
+                yield return new TestCaseData(new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("ad", "ad", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) }, 4,
+                    new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) },
+                    new[] { true, true, true, false, true, false },
+                    null);
+                yield return new TestCaseData(new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("ad", "ad", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) }, 4,
+                    new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) },
+                    new[] { true, true, true, false, true, false },
+                    new BookCustomComparer());
+            }
+        }
+        [TestCaseSource(nameof(AddBookTestData))]
+        [Test]
+        public void Add_BookArray_TrueFalseResultsExpected
+            (Book[] dataArray, int expextedSize, Book[] expectedData, bool[] expectedResults,
+            IComparer<Book> comparer)
+        {
+            //arrange
+            BinarySearchTree<Book> tree = new BinarySearchTree<Book>(comparer);
+            //act-assert
+            for (int i = 0; i < dataArray.Length; i++)
+            {
+                bool actual = tree.Add(dataArray[i]);
+                Assert.AreEqual(expectedResults[i], actual);
+            }
+            CollectionAssert.AreEquivalent(expectedData, tree);
+        }
+
+        public static IEnumerable<TestCaseData> ClearBookTestData
+        {
+            get
+            {
+                yield return new TestCaseData(
+                    new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("ad", "ad", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) }, 0,
+                    new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) },
+                    null);
+                yield return new TestCaseData(
+                    new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("ad", "ad", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) }, 0,
+                    new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) },
+                    new BookCustomComparer());
+            }
+        }
+        [TestCaseSource(nameof(ClearBookTestData))]
+        [Test]
+        public void Clear_BookArrayClear_EmptyTreeExpected
+            (Book[] dataArray, int expextedSize, Book[] unexpectedData,
+            IComparer<Book> comparer)
+        {
+            //arrange
+            BinarySearchTree<Book> tree = new BinarySearchTree<Book>(dataArray, comparer);
+            //act
+            tree.Clear();
+            //assert
+            Assert.AreEqual(expextedSize, tree.Count);
+            foreach (var item in unexpectedData)
+            {
+                CollectionAssert.DoesNotContain(tree, item);
+            }
+        }
+
+        public static IEnumerable<TestCaseData> AddContainsBookTestData
+        {
+            get
+            {
+                yield return new TestCaseData(new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("ad", "ad", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) }, 0,
+                    new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m), new Book("haha", "haha", 2016, 12m), new Book("lol", "lol", 2016, 12m) },
+                    new[] { true, true, true, true, false, false }, null);
+                yield return new TestCaseData(new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("ad", "ad", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) }, 0,
+                    new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m), new Book("haha", "haha", 2016, 12m), new Book("lol", "lol", 2016, 12m) },
+                    new[] { true, true, true, true, false, false },
+                    new BookCustomComparer());
+            }
+        }
+        [TestCaseSource(nameof(AddContainsBookTestData))]
+        [Test]
+        public void AddContains_BookArray_TrueFalseResultsExpected
+            (Book[] dataArray, int expextedSize, Book[] testData, bool[] expectedResults,
+            IComparer<Book> comparer)
+        {
+            //arrange
+            BinarySearchTree<Book> tree = new BinarySearchTree<Book>(dataArray, comparer);
+            //assert
+            for (int i = 0; i < testData.Length; i++)
+            {
+                bool actual = tree.Contains(testData[i]);
+                Assert.AreEqual(expectedResults[i], actual);
+            }
+        }
+
+        public static IEnumerable<TestCaseData> CopyToBookTestData
+        {
+            get
+            {
+                yield return new TestCaseData(
+                    new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m) }, 9,
+                    new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("15", "15", 2016, 15m), new Book("30", "30", 2016, 30m), new Book("3", "3", 2016, 3m), new Book("5", "5", 2016, 5m), new Book("35", "35", 2016, 35m), new Book("33", "33", 2016, 33m), new Book("8", "8", 2016, 8m) }, null);
+                yield return new TestCaseData(
+                    new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m) }, 9,
+                    new[] { new Book("20", "20", 2016, 20m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("8", "8", 2016, 8m), new Book("35", "35", 2016, 35m), new Book("33", "33", 2016, 33m), new Book("3", "3", 2016, 3m), new Book("10", "10", 2016, 10m), new Book("15", "15", 2016, 15m) },
+                    new BookCustomComparer());
+            }
+        }
+        [TestCaseSource(nameof(CopyToBookTestData))]
+        [Test]
+        public void CopyTo_BookArray_PreorderArrayExpected
+            (Book[] dataArray, int expextedSize, Book[] expectedDataOrder,
+            IComparer<Book> comparer)
+        {
+            //arrange
+            BinarySearchTree<Book> tree = new BinarySearchTree<Book>(comparer);
+            Book[] destArray = new Book[expextedSize];
+            foreach (Book t in dataArray)
+                tree.Add(t);
+            //act
+            tree.CopyTo(destArray, 0);
+            //assert
+            CollectionAssert.AreEqual(expectedDataOrder, destArray);
+        }
+
+        public static IEnumerable<TestCaseData> RemoveContainsBookTestData
+        {
+            get
+            {
+                yield return new TestCaseData(new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m) }, 4,
+                    new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("15", "15", 2016, 15m), new Book("30", "30", 2016, 30m), new Book("35", "35", 2016, 35m) }, new[] { new Book("5", "5", 2016, 5m), new Book("3", "3", 2016, 3m), new Book("33", "33", 2016, 33m), new Book("8", "8", 2016, 8m) }, null);
+                yield return new TestCaseData(new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m) }, 4,
+                    new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("15", "15", 2016, 15m), new Book("30", "30", 2016, 30m), new Book("35", "35", 2016, 35m) }, new[] { new Book("5", "5", 2016, 5m), new Book("3", "3", 2016, 3m), new Book("33", "33", 2016, 33m), new Book("8", "8", 2016, 8m) },
+                    new BookCustomComparer());
+                yield return new TestCaseData(new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m) }, 8,
+                    new[] { new Book("8", "8", 2016, 8m) }, new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("33", "33", 2016, 33m) }, null);
+                yield return new TestCaseData(new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m) }, 8,
+                    new[] { new Book("8", "8", 2016, 8m) }, new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("33", "33", 2016, 33m) },
+                    new BookCustomComparer());
+                yield return new TestCaseData(new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m) }, 8,
+                    new[] { new Book("30", "30", 2016, 30m) }, new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m) }, null);
+                yield return new TestCaseData(new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m) }, 8,
+                    new[] { new Book("30", "30", 2016, 30m) }, new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m) },
+                    new BookCustomComparer());
+                yield return new TestCaseData(new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m) }, 8,
+                    new[] { new Book("35", "35", 2016, 35m) }, new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("3", "3", 2016, 3m), new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m) }, null);
+                yield return new TestCaseData(new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m) }, 8,
+                    new[] { new Book("35", "35", 2016, 35m) }, new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("3", "3", 2016, 3m), new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m) },
+                    new BookCustomComparer());
+                yield return new TestCaseData(new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m) }, 8,
+                    new[] { new Book("20", "20", 2016, 20m) }, new[] { new Book("10", "10", 2016, 10m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m) }, null);
+                yield return new TestCaseData(new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m) }, 8,
+                    new[] { new Book("20", "20", 2016, 20m) }, new[] { new Book("10", "10", 2016, 10m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m) },
+                    new BookCustomComparer());
+                yield return new TestCaseData(new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m) }, 8,
+                    new[] { new Book("10", "10", 2016, 10m) }, new[] { new Book("20", "20", 2016, 20m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m) }, null);
+                yield return new TestCaseData(new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m) }, 8,
+                    new[] { new Book("10", "10", 2016, 10m) }, new[] { new Book("20", "20", 2016, 20m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m) }, new BookCustomComparer());
+            }
+        }
+        [TestCaseSource(nameof(RemoveContainsBookTestData))]
+        [Test]
+        public void RemoveContains_BookArray_TrueFalseResultsExpected
+            (Book[] dataArray, int expextedSize, Book[] dataToDelete,
+                Book[] remainingData, IComparer<Book> comparer)
+        {
+            //arrange
+            BinarySearchTree<Book> tree = new BinarySearchTree<Book>(dataArray, comparer);
+            //act-assert
+            foreach (Book t in dataToDelete)
+            {
+                bool actual = tree.Remove(t);
+                Assert.AreEqual(true, actual);
+                actual = tree.Remove(t);
+                Assert.AreEqual(false, actual);
+            }
+            //assert
+            Assert.AreEqual(expextedSize, tree.Count);
+            foreach (var item in dataToDelete)
+            {
+                Assert.AreEqual(false, tree.Contains(item));
+            }
+            foreach (var item in remainingData)
+            {
+                Assert.AreEqual(true, tree.Contains(item));
+            }
+            CollectionAssert.AreEquivalent(remainingData, tree);
+        }
+
+        public static IEnumerable<TestCaseData> GetPreorderEnumeratorBookTestData
+        {
+            get
+            {
+                yield return new TestCaseData(new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m) },
+                    new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("15", "15", 2016, 15m), new Book("30", "30", 2016, 30m), new Book("3", "3", 2016, 3m), new Book("5", "5", 2016, 5m), new Book("35", "35", 2016, 35m), new Book("33", "33", 2016, 33m), new Book("8", "8", 2016, 8m) }, null);
+                yield return new TestCaseData(new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m) },
+                    new[] { new Book("20", "20", 2016, 20m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("8", "8", 2016, 8m), new Book("35", "35", 2016, 35m), new Book("33", "33", 2016, 33m), new Book("3", "3", 2016, 3m), new Book("10", "10", 2016, 10m), new Book("15", "15", 2016, 15m) },
+                    new BookCustomComparer());
+            }
+        }
+        [TestCaseSource(nameof(GetPreorderEnumeratorBookTestData))]
+        [Test]
+        public void GetPreorderEnumerator_BookArray_preorderEnumerationExpected
+            (Book[] dataArray, Book[] expectedDataOrder, IComparer<Book> comparer)
+        {
+            //arrange
+            BinarySearchTree<Book> tree = new BinarySearchTree<Book>(dataArray, comparer);
+            //act
+            IEnumerator<Book> actual = tree.GetPreorderEnumerator();
+            //assert
+            int i = 0;
+            while (actual.MoveNext())
+            {
+                Assert.AreEqual(expectedDataOrder[i++], actual.Current);
+            }
+            Assert.AreEqual(i, expectedDataOrder.Length);
+        }
+
+        public static IEnumerable<TestCaseData> GetInorderEnumeratorBookTestData
+        {
+            get
+            {
+                yield return new TestCaseData(new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m) },
+                    new[] { new Book("10", "10", 2016, 10m), new Book("15", "15", 2016, 15m), new Book("20", "20", 2016, 20m), new Book("3", "3", 2016, 3m), new Book("30", "30", 2016, 30m), new Book("33", "33", 2016, 33m), new Book("35", "35", 2016, 35m), new Book("5", "5", 2016, 5m), new Book("8", "8", 2016, 8m) }, null);
+                yield return new TestCaseData(new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m) },
+                    new[] { new Book("8", "8", 2016, 8m), new Book("5", "5", 2016, 5m), new Book("35", "35", 2016, 35m), new Book("33", "33", 2016, 33m), new Book("30", "30", 2016, 30m), new Book("3", "3", 2016, 3m), new Book("20", "20", 2016, 20m), new Book("15", "15", 2016, 15m), new Book("10", "10", 2016, 10m) }, new BookCustomComparer());
+            }
+        }
+        [TestCaseSource(nameof(GetInorderEnumeratorBookTestData))]
+        [Test]
+        public void GetInorderEnumerator_BookArray_preorderEnumerationExpected
+            (Book[] dataArray, Book[] expectedDataOrder, IComparer<Book> comparer)
+        {
+            //arrange
+            BinarySearchTree<Book> tree = new BinarySearchTree<Book>(dataArray, comparer);
+            //act
+            IEnumerator<Book> actual = tree.GetInorderEnumerator();
+            //assert
+            int i = 0;
+            while (actual.MoveNext())
+            {
+                Assert.AreEqual(expectedDataOrder[i++], actual.Current);
+            }
+            Assert.AreEqual(i, expectedDataOrder.Length);
+        }
+
+        public static IEnumerable<TestCaseData> GetPostorderEnumeratorBookTestData
+        {
+            get
+            {
+                yield return new TestCaseData(new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m) },
+                    new[] { new Book("15", "15", 2016, 15m), new Book("10", "10", 2016, 10m), new Book("3", "3", 2016, 3m), new Book("33", "33", 2016, 33m), new Book("35", "35", 2016, 35m), new Book("8", "8", 2016, 8m), new Book("5", "5", 2016, 5m), new Book("30", "30", 2016, 30m), new Book("20", "20", 2016, 20m) }, null);
+                yield return new TestCaseData(new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m) },
+                    new[] { new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m), new Book("35", "35", 2016, 35m), new Book("5", "5", 2016, 5m), new Book("3", "3", 2016, 3m), new Book("30", "30", 2016, 30m), new Book("15", "15", 2016, 15m), new Book("10", "10", 2016, 10m), new Book("20", "20", 2016, 20m) }, new BookCustomComparer());
+            }
+        }
+        [TestCaseSource(nameof(GetPostorderEnumeratorBookTestData))]
+        [Test]
+        public void GetPostorderEnumerator_BookArray_preorderEnumerationExpected
+            (Book[] dataArray, Book[] expectedDataOrder, IComparer<Book> comparer)
+        {
+            //arrange
+            BinarySearchTree<Book> tree = new BinarySearchTree<Book>(dataArray, comparer);
+            //act
+            IEnumerator<Book> actual = tree.GetPostorderEnumerator();
+            //assert
+            int i = 0;
+            while (actual.MoveNext())
+            {
+                Assert.AreEqual(expectedDataOrder[i++], actual.Current);
+            }
+            Assert.AreEqual(i, expectedDataOrder.Length);
+        }
+        #endregion
+
+        #region struct Point tests
+
+        public struct Point
+        {
+            private int x;
+            private int y;
+            public int X => x;
+            public int Y => y;
+
+            public Point(int x, int y)
+            {
+                this.x = x;
+                this.y = y;
+            }
+        }
+
+        public class PointOrderComparer : IComparer<Point>
+        {
+            public int Compare(Point x, Point y)
+            {
+                int res = x.X.CompareTo(y.X);
+                if (res == 0)
+                    res = x.Y.CompareTo(y.Y);
+                return res;
+            }
+        }
+
+        public class PointReverseComparer : IComparer<Point>
+        {
+            public int Compare(Point x, Point y)
+            {
+                int res = y.X.CompareTo(x.X);
+                if (res == 0)
+                    res = y.Y.CompareTo(x.Y);
+                return res;
+            }
+        }
+
+        public static IEnumerable<TestCaseData> CtorPointTestData
+        {
+            get
+            {
+                yield return new TestCaseData(new[] { new Point(1, 1), new Point(2, 2), new Point(2, 2), new Point(3, 3), new Point(4, 4), new Point(-5, -5), new Point(10, 10), new Point(12, 12) }, 7,
+                    new[] { new Point(1, 1), new Point(2, 2), new Point(3, 3), new Point(4, 4), new Point(-5, -5), new Point(10, 10), new Point(12, 12) }, new[] { new Point(0, 0), new Point(11, 11), new Point(9, 9) }, new PointOrderComparer());
+                yield return new TestCaseData(new[] { new Point(1, 1), new Point(2, 2), new Point(2, 2), new Point(3, 3), new Point(4, 4), new Point(-5, -5), new Point(10, 10), new Point(12, 12) }, 7,
+                    new[] { new Point(1, 1), new Point(2, 2), new Point(3, 3), new Point(4, 4), new Point(-5, -5), new Point(10, 10), new Point(12, 12) }, new[] { new Point(0, 0), new Point(11, 11), new Point(9, 9) }, new PointReverseComparer());
+            }
+        }
+
+        [TestCaseSource(nameof(CtorPointTestData))]
+        [Test]
+        public void Ctor_PointArray_TreeWithUniqueElementsExpected
+            (Point[] array, int expectedCount, Point[] expectedElements, Point[] unexpectedElements,
+            IComparer<Point> comparer)
+        {
+            //act
+            BinarySearchTree<Point> actual = new BinarySearchTree<Point>(array, comparer);
+            //assert
+            Assert.AreEqual(expectedCount, actual.Count);
+            CollectionAssert.AreEquivalent(expectedElements, actual);
+            foreach (var item in unexpectedElements)
+            {
+                CollectionAssert.DoesNotContain(actual, item);
+            }
+        }
+
+        public static IEnumerable<TestCaseData> AddPointTestData
+        {
+            get
+            {
+                yield return new TestCaseData(new[] { new Point(1, 1), new Point(2, 2), new Point(2, 2), new Point(3, 3), new Point(3, 3), new Point(3, 3), new Point(4, 4), new Point(-5, -5), new Point(10, 10), new Point(10, 10), new Point(12, 12) }, 7,
+                    new[] { new Point(1, 1), new Point(2, 2), new Point(3, 3), new Point(4, 4), new Point(-5, -5), new Point(10, 10), new Point(12, 12) },
+                    new[] { true, true, false, true, false, false, true, true, true, false, true },
+                    new PointOrderComparer());
+                yield return new TestCaseData(new[] { new Point(1, 1), new Point(2, 2), new Point(2, 2), new Point(3, 3), new Point(3, 3), new Point(3, 3), new Point(4, 4), new Point(-5, -5), new Point(10, 10), new Point(10, 10), new Point(12, 12) }, 7,
+                    new[] { new Point(1, 1), new Point(2, 2), new Point(3, 3), new Point(4, 4), new Point(-5, -5), new Point(10, 10), new Point(12, 12) },
+                    new[] { true, true, false, true, false, false, true, true, true, false, true },
+                    new PointReverseComparer());
+            }
+        }
+        [TestCaseSource(nameof(AddPointTestData))]
+        [Test]
+        public void Add_PointArray_TrueFalseResultsExpected
+            (Point[] dataArray, int expextedSize, Point[] expectedData, bool[] expectedResults,
+            IComparer<Point> comparer)
+        {
+            //arrange
+            BinarySearchTree<Point> tree = new BinarySearchTree<Point>(comparer);
+            //act-assert
+            for (int i = 0; i < dataArray.Length; i++)
+            {
+                bool actual = tree.Add(dataArray[i]);
+                Assert.AreEqual(expectedResults[i], actual);
+            }
+            CollectionAssert.AreEquivalent(expectedData, tree);
+        }
+
+        public static IEnumerable<TestCaseData> ClearPointTestData
+        {
+            get
+            {
+                yield return new TestCaseData(new[] { new Point(1, 1), new Point(2, 2), new Point(2, 2), new Point(3, 3), new Point(3, 3), new Point(3, 3), new Point(4, 4), new Point(-5, -5), new Point(10, 10), new Point(10, 10), new Point(12, 12) }, 0,
+                    new[] { new Point(1, 1), new Point(2, 2), new Point(3, 3), new Point(4, 4), new Point(-5, -5), new Point(10, 10), new Point(12, 12) }, new PointOrderComparer());
+                yield return new TestCaseData(new[] { new Point(1, 1), new Point(2, 2), new Point(2, 2), new Point(3, 3), new Point(3, 3), new Point(3, 3), new Point(4, 4), new Point(-5, -5), new Point(10, 10), new Point(10, 10), new Point(12, 12) }, 0,
+                    new[] { new Point(1, 1), new Point(2, 2), new Point(3, 3), new Point(4, 4), new Point(-5, -5), new Point(10, 10), new Point(12, 12) },
+                    new PointReverseComparer());
+            }
+        }
+        [TestCaseSource(nameof(ClearPointTestData))]
+        [Test]
+        public void Clear_PointArrayClear_EmptyTreeExpected
+            (Point[] dataArray, int expextedSize, Point[] unexpectedData,
+            IComparer<Point> comparer)
+        {
+            //arrange
+            BinarySearchTree<Point> tree = new BinarySearchTree<Point>(dataArray, comparer);
+            //act
+            tree.Clear();
+            //assert
+            Assert.AreEqual(expextedSize, tree.Count);
+            foreach (var item in unexpectedData)
+            {
+                CollectionAssert.DoesNotContain(tree, item);
+            }
+        }
+
+        public static IEnumerable<TestCaseData> AddContainsPointTestData
+        {
+            get
+            {
+                yield return new TestCaseData(new[] { new Point(1, 1), new Point(2, 2), new Point(2, 2), new Point(3, 3), new Point(3, 3), new Point(3, 3), new Point(4, 4), new Point(-5, -5), new Point(10, 10), new Point(10, 10), new Point(12, 12) }, 7,
+                    new[] { new Point(1, 1), new Point(0, 0), new Point(2, 2), new Point(3, 3), new Point(15, 15), new Point(4, 4), new Point(-5, -5), new Point(10, 10), new Point(12, 12), new Point(24, 24) },
+                    new[] { true, false, true, true, false, true, true, true, true, false }, new PointOrderComparer());
+                yield return new TestCaseData(new[] { new Point(1, 1), new Point(2, 2), new Point(2, 2), new Point(3, 3), new Point(3, 3), new Point(3, 3), new Point(4, 4), new Point(-5, -5), new Point(10, 10), new Point(10, 10), new Point(12, 12) }, 7,
+                    new[] { new Point(1, 1), new Point(0, 0), new Point(2, 2), new Point(3, 3), new Point(15, 15), new Point(4, 4), new Point(-5, -5), new Point(10, 10), new Point(12, 12), new Point(24, 24) },
+                    new[] { true, false, true, true, false, true, true, true, true, false },
+                    new PointReverseComparer());
+            }
+        }
+        [TestCaseSource(nameof(AddContainsPointTestData))]
+        [Test]
+        public void AddContains_PointArray_TrueFalseResultsExpected
+            (Point[] dataArray, int expextedSize, Point[] testData, bool[] expectedResults,
+            IComparer<Point> comparer)
+        {
+            //arrange
+            BinarySearchTree<Point> tree = new BinarySearchTree<Point>(dataArray, comparer);
+            //assert
+            for (int i = 0; i < testData.Length; i++)
+            {
+                bool actual = tree.Contains(testData[i]);
+                Assert.AreEqual(expectedResults[i], actual);
+            }
+        }
+
+        public static IEnumerable<TestCaseData> CopyToPointTestData
+        {
+            get
+            {
+                yield return new TestCaseData(new[] { new Point(20, 20), new Point(10, 10), new Point(30, 30), new Point(5, 5), new Point(15, 15), new Point(35, 35), new Point(3, 3), new Point(8, 8), new Point(33, 33) }, 9,
+                    new[] { new Point(20, 20), new Point(10, 10), new Point(5, 5), new Point(3, 3), new Point(8, 8), new Point(15, 15), new Point(30, 30), new Point(35, 35), new Point(33, 33) }, new PointOrderComparer());
+                yield return new TestCaseData(new[] { new Point(20, 20), new Point(10, 10), new Point(30, 30), new Point(5, 5), new Point(15, 15), new Point(35, 35), new Point(3, 3), new Point(8, 8), new Point(33, 33) }, 9,
+                    new[] { new Point(20, 20), new Point(30, 30), new Point(35, 35), new Point(33, 33), new Point(10, 10), new Point(15, 15), new Point(5, 5), new Point(8, 8), new Point(3, 3) },
+                    new PointReverseComparer());
+            }
+        }
+        [TestCaseSource(nameof(CopyToPointTestData))]
+        [Test]
+        public void CopyTo_PointArray_PreorderArrayExpected
+            (Point[] dataArray, int expextedSize, Point[] expectedDataOrder,
+            IComparer<Point> comparer)
+        {
+            //arrange
+            BinarySearchTree<Point> tree = new BinarySearchTree<Point>(comparer);
+            Point[] destArray = new Point[expextedSize];
+            foreach (Point t in dataArray)
+                tree.Add(t);
+            //act
+            tree.CopyTo(destArray, 0);
+            //assert
+            CollectionAssert.AreEqual(expectedDataOrder, destArray);
+        }
+
+        public static IEnumerable<TestCaseData> RemoveContainsPointTestData
+        {
+            get
+            {
+                yield return new TestCaseData(new[] { new Point(20, 20), new Point(10, 10), new Point(30, 30), new Point(5, 5), new Point(15, 15), new Point(35, 35), new Point(3, 3), new Point(8, 8), new Point(33, 33) }, 4,
+                    new[] { new Point(20, 20), new Point(10, 10), new Point(15, 15), new Point(30, 30), new Point(35, 35) }, new[] { new Point(5, 5), new Point(3, 3), new Point(33, 33), new Point(8, 8) }, new PointOrderComparer());
+                yield return new TestCaseData(new[] { new Point(20, 20), new Point(10, 10), new Point(30, 30), new Point(5, 5), new Point(15, 15), new Point(35, 35), new Point(3, 3), new Point(8, 8), new Point(33, 33) }, 4,
+                    new[] { new Point(20, 20), new Point(10, 10), new Point(15, 15), new Point(30, 30), new Point(35, 35) }, new[] { new Point(5, 5), new Point(3, 3), new Point(33, 33), new Point(8, 8) },
+                    new PointReverseComparer());
+                yield return new TestCaseData(new[] { new Point(20, 20), new Point(10, 10), new Point(30, 30), new Point(5, 5), new Point(15, 15), new Point(35, 35), new Point(3, 3), new Point(8, 8), new Point(33, 33) }, 8,
+                    new[] { new Point(8, 8) }, new[] { new Point(20, 20), new Point(10, 10), new Point(30, 30), new Point(5, 5), new Point(15, 15), new Point(35, 35), new Point(3, 3), new Point(33, 33) }, new PointOrderComparer());
+                yield return new TestCaseData(new[] { new Point(20, 20), new Point(10, 10), new Point(30, 30), new Point(5, 5), new Point(15, 15), new Point(35, 35), new Point(3, 3), new Point(8, 8), new Point(33, 33) }, 8,
+                    new[] { new Point(8, 8) }, new[] { new Point(20, 20), new Point(10, 10), new Point(30, 30), new Point(5, 5), new Point(15, 15), new Point(35, 35), new Point(3, 3), new Point(33, 33) },
+                    new PointReverseComparer());
+                yield return new TestCaseData(new[] { new Point(20, 20), new Point(10, 10), new Point(30, 30), new Point(5, 5), new Point(15, 15), new Point(35, 35), new Point(3, 3), new Point(8, 8), new Point(33, 33) }, 8,
+                    new[] { new Point(30, 30) }, new[] { new Point(20, 20), new Point(10, 10), new Point(5, 5), new Point(15, 15), new Point(35, 35), new Point(3, 3), new Point(8, 8), new Point(33, 33) }, new PointOrderComparer());
+                yield return new TestCaseData(new[] { new Point(20, 20), new Point(10, 10), new Point(30, 30), new Point(5, 5), new Point(15, 15), new Point(35, 35), new Point(3, 3), new Point(8, 8), new Point(33, 33) }, 8,
+                    new[] { new Point(30, 30) }, new[] { new Point(20, 20), new Point(10, 10), new Point(5, 5), new Point(15, 15), new Point(35, 35), new Point(3, 3), new Point(8, 8), new Point(33, 33) },
+                    new PointReverseComparer());
+                yield return new TestCaseData(new[] { new Point(20, 20), new Point(10, 10), new Point(30, 30), new Point(5, 5), new Point(15, 15), new Point(35, 35), new Point(3, 3), new Point(8, 8), new Point(33, 33) }, 8,
+                    new[] { new Point(35, 35) }, new[] { new Point(20, 20), new Point(10, 10), new Point(30, 30), new Point(5, 5), new Point(15, 15), new Point(3, 3), new Point(8, 8), new Point(33, 33) }, new PointOrderComparer());
+                yield return new TestCaseData(new[] { new Point(20, 20), new Point(10, 10), new Point(30, 30), new Point(5, 5), new Point(15, 15), new Point(35, 35), new Point(3, 3), new Point(8, 8), new Point(33, 33) }, 8,
+                    new[] { new Point(35, 35) }, new[] { new Point(20, 20), new Point(10, 10), new Point(30, 30), new Point(5, 5), new Point(15, 15), new Point(3, 3), new Point(8, 8), new Point(33, 33) },
+                    new PointReverseComparer());
+                yield return new TestCaseData(new[] { new Point(20, 20), new Point(10, 10), new Point(30, 30), new Point(5, 5), new Point(15, 15), new Point(35, 35), new Point(3, 3), new Point(8, 8), new Point(33, 33) }, 8,
+                    new[] { new Point(20, 20) }, new[] { new Point(10, 10), new Point(30, 30), new Point(5, 5), new Point(15, 15), new Point(35, 35), new Point(3, 3), new Point(8, 8), new Point(33, 33) }, new PointOrderComparer());
+                yield return new TestCaseData(new[] { new Point(20, 20), new Point(10, 10), new Point(30, 30), new Point(5, 5), new Point(15, 15), new Point(35, 35), new Point(3, 3), new Point(8, 8), new Point(33, 33) }, 8,
+                    new[] { new Point(20, 20) }, new[] { new Point(10, 10), new Point(30, 30), new Point(5, 5), new Point(15, 15), new Point(35, 35), new Point(3, 3), new Point(8, 8), new Point(33, 33) },
+                    new PointReverseComparer());
+                yield return new TestCaseData(new[] { new Point(20, 20), new Point(10, 10), new Point(30, 30), new Point(5, 5), new Point(15, 15), new Point(35, 35), new Point(3, 3), new Point(8, 8), new Point(33, 33) }, 8,
+                    new[] { new Point(10, 10) }, new[] { new Point(20, 20), new Point(30, 30), new Point(5, 5), new Point(15, 15), new Point(35, 35), new Point(3, 3), new Point(8, 8), new Point(33, 33) }, new PointOrderComparer());
+                yield return new TestCaseData(new[] { new Point(20, 20), new Point(10, 10), new Point(30, 30), new Point(5, 5), new Point(15, 15), new Point(35, 35), new Point(3, 3), new Point(8, 8), new Point(33, 33) }, 8,
+                    new[] { new Point(10, 10) }, new[] { new Point(20, 20), new Point(30, 30), new Point(5, 5), new Point(15, 15), new Point(35, 35), new Point(3, 3), new Point(8, 8), new Point(33, 33) }, new PointReverseComparer());
+            }
+        }
+        [TestCaseSource(nameof(RemoveContainsPointTestData))]
+        [Test]
+        public void RemoveContains_PointArray_TrueFalseResultsExpected
+            (Point[] dataArray, int expextedSize, Point[] dataToDelete,
+                Point[] remainingData, IComparer<Point> comparer)
+        {
+            //arrange
+            BinarySearchTree<Point> tree = new BinarySearchTree<Point>(dataArray, comparer);
+            //act-assert
+            foreach (Point t in dataToDelete)
+            {
+                bool actual = tree.Remove(t);
+                Assert.AreEqual(true, actual);
+                actual = tree.Remove(t);
+                Assert.AreEqual(false, actual);
+            }
+            //assert
+            Assert.AreEqual(expextedSize, tree.Count);
+            foreach (var item in dataToDelete)
+            {
+                Assert.AreEqual(false, tree.Contains(item));
+            }
+            foreach (var item in remainingData)
+            {
+                Assert.AreEqual(true, tree.Contains(item));
+            }
+            CollectionAssert.AreEquivalent(remainingData, tree);
+        }
+
+        public static IEnumerable<TestCaseData> GetPreorderEnumeratorPointTestData
+        {
+            get
+            {
+                yield return new TestCaseData(new[] { new Point(20, 20), new Point(10, 10), new Point(30, 30), new Point(5, 5), new Point(15, 15), new Point(35, 35), new Point(3, 3), new Point(8, 8), new Point(33, 33) },
+                    new[] { new Point(20, 20), new Point(10, 10), new Point(5, 5), new Point(3, 3), new Point(8, 8), new Point(15, 15), new Point(30, 30), new Point(35, 35), new Point(33, 33) }, new PointOrderComparer());
+                yield return new TestCaseData(new[] { new Point(20, 20), new Point(10, 10), new Point(30, 30), new Point(5, 5), new Point(15, 15), new Point(35, 35), new Point(3, 3), new Point(8, 8), new Point(33, 33) },
+                    new[] { new Point(20, 20), new Point(30, 30), new Point(35, 35), new Point(33, 33), new Point(10, 10), new Point(15, 15), new Point(5, 5), new Point(8, 8), new Point(3, 3) },
+                    new PointReverseComparer());
+            }
+        }
+        [TestCaseSource(nameof(GetPreorderEnumeratorPointTestData))]
+        [Test]
+        public void GetPreorderEnumerator_PointArray_preorderEnumerationExpected
+            (Point[] dataArray, Point[] expectedDataOrder, IComparer<Point> comparer)
+        {
+            //arrange
+            BinarySearchTree<Point> tree = new BinarySearchTree<Point>(dataArray, comparer);
+            //act
+            IEnumerator<Point> actual = tree.GetPreorderEnumerator();
+            //assert
+            int i = 0;
+            while (actual.MoveNext())
+            {
+                Assert.AreEqual(expectedDataOrder[i++], actual.Current);
+            }
+            Assert.AreEqual(i, expectedDataOrder.Length);
+        }
+
+        public static IEnumerable<TestCaseData> GetInorderEnumeratorPointTestData
+        {
+            get
+            {
+                yield return new TestCaseData(new[] { new Point(20, 20), new Point(10, 10), new Point(30, 30), new Point(5, 5), new Point(15, 15), new Point(35, 35), new Point(3, 3), new Point(8, 8), new Point(33, 33), },
+            new[] { new Point(3, 3), new Point(5, 5), new Point(8, 8), new Point(10, 10), new Point(15, 15), new Point(20, 20), new Point(30, 30), new Point(33, 33), new Point(35, 35), }, new PointOrderComparer());
+                yield return new TestCaseData(new[] { new Point(20, 20), new Point(10, 10), new Point(30, 30), new Point(5, 5), new Point(15, 15), new Point(35, 35), new Point(3, 3), new Point(8, 8), new Point(33, 33) },
+            new[] { new Point(35, 35), new Point(33, 33), new Point(30, 30), new Point(20, 20), new Point(15, 15), new Point(10, 10), new Point(8, 8), new Point(5, 5), new Point(3, 3) }, new PointReverseComparer());
+            }
+        }
+        [TestCaseSource(nameof(GetInorderEnumeratorPointTestData))]
+        [Test]
+        public void GetInorderEnumerator_PointArray_preorderEnumerationExpected
+            (Point[] dataArray, Point[] expectedDataOrder, IComparer<Point> comparer)
+        {
+            //arrange
+            BinarySearchTree<Point> tree = new BinarySearchTree<Point>(dataArray, comparer);
+            //act
+            IEnumerator<Point> actual = tree.GetInorderEnumerator();
+            //assert
+            int i = 0;
+            while (actual.MoveNext())
+            {
+                Assert.AreEqual(expectedDataOrder[i++], actual.Current);
+            }
+            Assert.AreEqual(i, expectedDataOrder.Length);
+        }
+
+        public static IEnumerable<TestCaseData> GetPostorderEnumeratorPointTestData
+        {
+            get
+            {
+                yield return new TestCaseData(new[] { new Point(20, 20), new Point(10, 10), new Point(30, 30), new Point(5, 5), new Point(15, 15), new Point(35, 35), new Point(3, 3), new Point(8, 8), new Point(33, 33) },
+            new[] { new Point(3, 3), new Point(8, 8), new Point(5, 5), new Point(15, 15), new Point(10, 10), new Point(33, 33), new Point(35, 35), new Point(30, 30), new Point(20, 20) }, new PointOrderComparer());
+                yield return new TestCaseData(new[] { new Point(20, 20), new Point(10, 10), new Point(30, 30), new Point(5, 5), new Point(15, 15), new Point(35, 35), new Point(3, 3), new Point(8, 8), new Point(33, 33) },
+            new[] { new Point(33, 33), new Point(35, 35), new Point(30, 30), new Point(15, 15), new Point(8, 8), new Point(3, 3), new Point(5, 5), new Point(10, 10), new Point(20, 20) }, new PointReverseComparer());
+            }
+        }
+        [TestCaseSource(nameof(GetPostorderEnumeratorPointTestData))]
+        [Test]
+        public void GetPostorderEnumerator_PointArray_preorderEnumerationExpected
+            (Point[] dataArray, Point[] expectedDataOrder, IComparer<Point> comparer)
+        {
+            //arrange
+            BinarySearchTree<Point> tree = new BinarySearchTree<Point>(dataArray, comparer);
+            //act
+            IEnumerator<Point> actual = tree.GetPostorderEnumerator();
+            //assert
+            int i = 0;
+            while (actual.MoveNext())
+            {
+                Assert.AreEqual(expectedDataOrder[i++], actual.Current);
+            }
+            Assert.AreEqual(i, expectedDataOrder.Length);
+        }
+        #endregion
     }
 }
