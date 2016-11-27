@@ -13,7 +13,7 @@ namespace Task2.Logic
         public int Count { get; private set; }
         public virtual bool IsReadOnly => false;
 
-        private IComparer<T> comparer;
+        private readonly IComparer<T> comparer;
         private Node<T> root;
 
         public BinarySearchTree(IComparer<T> comparer = null)
@@ -42,6 +42,7 @@ namespace Task2.Logic
             if (ReferenceEquals(root, null))
             {
                 root = new Node<T> {Value = item};
+                Count++;
                 return true;
             }
             Node<T> unusedParent;
@@ -64,6 +65,7 @@ namespace Task2.Logic
 
         public void Clear()
         {
+            Count = 0;
             root = null;
         }
 
@@ -76,6 +78,11 @@ namespace Task2.Logic
             return false;
         }
 
+        /// <summary>
+        /// Copies elements to array in order that <see cref="GetEnumerator"/> does
+        /// </summary>
+        /// <param name="array">destination array</param>
+        /// <param name="arrayIndex">start destination index</param>
         public void CopyTo(T[] array, int arrayIndex)
         {
             if (array == null)
@@ -90,7 +97,8 @@ namespace Task2.Logic
                 throw new ArgumentOutOfRangeException
                     ($"There are not enought space in {nameof(array)} " +
                      $"starting from {nameof(arrayIndex)}");
-            Array.Copy(this.ToArray(), 0, array, arrayIndex, Count);
+            foreach (var item in this)
+                array[arrayIndex++] = item;
         }
 
         public bool Remove(T item)
@@ -108,6 +116,7 @@ namespace Task2.Logic
                 if (ReferenceEquals(foundedNode, root))
                 {
                     root = foundedNode.Right;
+                    Count--;
                     return true;
                 }
                 if (ReferenceEquals(foundedNode, parentNode.Left))
@@ -118,6 +127,7 @@ namespace Task2.Logic
                 {
                     parentNode.Right = foundedNode.Right;
                 }
+                Count--;
                 return true;
             }
             //if removing node has not right son
@@ -126,6 +136,7 @@ namespace Task2.Logic
                 if (ReferenceEquals(foundedNode, root))
                 {
                     root = foundedNode.Left;
+                    Count--;
                     return true;
                 }
                 if (foundedNode == parentNode.Left)
@@ -136,6 +147,7 @@ namespace Task2.Logic
                 {
                     parentNode.Right = foundedNode.Left;
                 }
+                Count--;
                 return true;
             }
             Node<T> currentNodeToSwap = foundedNode.Right;
@@ -167,6 +179,7 @@ namespace Task2.Logic
             }
             currentNodeToSwap.Left = foundedNode.Left;
             currentNodeToSwap.Right = foundedNode.Right;
+            Count--;
             return true;
         }
 
