@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Task1.Logic
 {
+    /// <summary>
+    /// Provides arguments to ElementChanged event
+    /// </summary>
     public class ElementChangedEventArgs : EventArgs
     {
         public int Row { get; }

@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace Task1.Logic
 {
+    /// <summary>
+    /// Visitors inteface to extend functionallity of matrixes 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public interface IMatrixVisitor<T>
     {
         void Visit(SquareMatrix<T> squareMatrix);

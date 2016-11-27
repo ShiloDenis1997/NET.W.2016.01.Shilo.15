@@ -6,16 +6,39 @@ using System.Threading.Tasks;
 
 namespace Task1.Logic
 {
+    /// <summary>
+    /// Represents behavior of square matrix
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class SquareMatrix<T> : AbstractSquareMatrix<T>
     {
+        /// <summary>
+        /// Inner storage for matrixes elements
+        /// </summary>
         private readonly T[,] matrix;
 
+        /// <summary>
+        /// Initializes new instance of <see cref="SquareMatrix{T}"/> with
+        /// specified <see cref="dimension"/>
+        /// </summary>
+        /// <param name="dimension">size of side of matrix</param>
+        /// <exception cref="ArgumentOutOfRangeException">Throws if
+        /// <paramref name="dimension"/> is less or equal to zero</exception>
         public SquareMatrix(int dimension)
         {
             Dimension = dimension;
             matrix = new T[dimension, dimension];
         }
 
+        /// <summary>
+        /// Initializes new instance of <see cref="SquareMatrix{T}"/> with
+        /// specified <see cref="matrix"/> elements
+        /// </summary>
+        /// <param name="matrix">elements of the matrix</param>
+        /// <exception cref="ArgumentOutOfRangeException">Throws if
+        /// <paramref name="matrix"/> first dimension is less or equal to zero</exception>
+        /// <exception cref="ArgumentException">Throws if <paramref name="matrix"/>
+        /// is not square</exception>
         public SquareMatrix(T[,] matrix)
         {
             Dimension = matrix.GetLength(0);
@@ -27,6 +50,15 @@ namespace Task1.Logic
                     this.matrix[i, j] = matrix[i, j];
         }
 
+        /// <summary>
+        /// Indexator to set/get elements of matrix
+        /// </summary>
+        /// <param name="row">row index</param>
+        /// <param name="column">column index</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException">Throws if <paramref name="row"/>
+        /// or <paramref name="column"/> is less than zero or greater,
+        /// equal than dimension</exception>
         public T this[int row, int column]
         {
             get
