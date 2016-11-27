@@ -8,14 +8,33 @@ using System.Threading.Tasks;
 
 namespace Task2.Logic
 {
+    /// <summary>
+    /// Class provides functionallity of binary search tree
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class BinarySearchTree<T> : ICollection<T>
     {
+        /// <summary>
+        /// Count of elements 
+        /// </summary>
         public int Count { get; private set; }
         public virtual bool IsReadOnly => false;
 
+        /// <summary>
+        /// Custom comparer can be provided
+        /// </summary>
         private readonly IComparer<T> comparer;
+
+        /// <summary>
+        /// Root of the tree
+        /// </summary>
         private Node<T> root;
 
+        /// <summary>
+        /// Initializes new instance of <see cref="BinarySearchTree{T}"/>
+        /// </summary>
+        /// <param name="comparer">If not specified, default comparer
+        /// will be used</param>
         public BinarySearchTree(IComparer<T> comparer = null)
         {
             root = null;
@@ -23,20 +42,47 @@ namespace Task2.Logic
             this.comparer = comparer ?? Comparer<T>.Default;
         }
 
+        /// <summary>
+        /// Initializes new instance of <see cref="BinarySearchTree{T}"/>
+        /// </summary>
+        /// <param name="comparison"></param>
+        /// <exception cref="ArgumentNullException">Throws if comparison is null
+        /// </exception>
         public BinarySearchTree(Comparison<T> comparison)
             : this(Comparer<T>.Create(comparison))
         {
         }
 
+        /// <summary>
+        /// Initializes new instance of <see cref="BinarySearchTree{T}"/>
+        /// with specified <paramref name="items"/>
+        /// </summary>
+        /// <param name="comparer">If not specified, default comparer
+        /// will be used</param>
+        /// <param name="items">Items for binary tree</param>
+        /// <exception cref="ArgumentNullException">Throws if <paramref name="items"/>
+        /// parameter is null</exception>
+        /// <exception cref="BinarySearchTreeException">Throws if 
+        /// comparer can't compare current items type</exception>
         public BinarySearchTree(IEnumerable<T> items, IComparer<T> comparer = null)
             : this(comparer)
         {
+            if (ReferenceEquals(items, null))
+                throw new ArgumentNullException($"{nameof(items)} is null");
             foreach (var item in items)
             {
                 Add(item);
             }
         }
 
+        /// <summary>
+        /// Adds new item to <see cref="BinarySearchTree{T}"/>
+        /// </summary>
+        /// <param name="item">iem to add</param>
+        /// <returns>true if <paramref name="item"/> was added in tree, otherwise 
+        /// returns false</returns>
+        /// <exception cref="BinarySearchTreeException">Throws if 
+        /// comparer can't compare current items type</exception>
         public bool Add(T item)
         {
             if (ReferenceEquals(root, null))
@@ -63,12 +109,23 @@ namespace Task2.Logic
             return true;
         }
 
+        /// <summary>
+        /// Removes all elements from current tree
+        /// </summary>
         public void Clear()
         {
             Count = 0;
             root = null;
         }
 
+        /// <summary>
+        /// Checks if <paramref name="item"/> is in current tree
+        /// </summary>
+        /// <param name="item">item to search</param>
+        /// <returns>true if <paramref name="item"/> is in current tree,
+        /// otherwise returns false</returns>
+        /// <exception cref="BinarySearchTreeException">Throws if 
+        /// comparer can't compare current items type</exception>
         public bool Contains(T item)
         {
             Node<T> unusedParent;
@@ -83,6 +140,13 @@ namespace Task2.Logic
         /// </summary>
         /// <param name="array">destination array</param>
         /// <param name="arrayIndex">start destination index</param>
+        /// <exception cref="ArgumentNullException">Throws if <paramref name="array"/>
+        /// is null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Throws if 
+        /// <paramref name="arrayIndex"/> is out of range</exception>
+        /// <exception cref="ArgumentException">Throws if there are no space in
+        /// <paramref name="array"/> to keep current tree starting from 
+        /// <paramref name="arrayIndex"/></exception>
         public void CopyTo(T[] array, int arrayIndex)
         {
             if (array == null)
@@ -94,13 +158,21 @@ namespace Task2.Logic
                 throw new ArgumentOutOfRangeException
                     ($"{nameof(arrayIndex)} is greater than {nameof(array)} size");
             if (Count > array.Length - arrayIndex)
-                throw new ArgumentOutOfRangeException
+                throw new ArgumentException
                     ($"There are not enought space in {nameof(array)} " +
                      $"starting from {nameof(arrayIndex)}");
             foreach (var item in this)
                 array[arrayIndex++] = item;
         }
 
+        /// <summary>
+        /// Trying to remove <paramref name="item"/> from the current tree
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns>true if <paramref name="item"/> successfully removed from 
+        /// the current tree. Otherwise returns false</returns>
+        /// <exception cref="BinarySearchTreeException">Throws if 
+        /// comparer does not specified to current items type</exception>
         public bool Remove(T item)
         {
             if (root == null)
@@ -183,7 +255,10 @@ namespace Task2.Logic
             return true;
         }
 
-
+        /// <summary>
+        /// Returns an enumerator to enumerate tree elements in
+        /// preorder order
+        /// </summary>
         public IEnumerator<T> GetPreorderEnumerator()
         {
             if (ReferenceEquals(root, null))
@@ -200,6 +275,10 @@ namespace Task2.Logic
             }
         }
 
+        /// <summary>
+        /// Returns an enumerator to enumerate tree elements in
+        /// inorder order
+        /// </summary>
         public IEnumerator<T> GetInorderEnumerator()
         {
             if (ReferenceEquals(root, null))
@@ -252,6 +331,10 @@ namespace Task2.Logic
             }
         }
 
+        /// <summary>
+        /// Returns an enumerator to enumerate tree elements in
+        /// postorder order
+        /// </summary>
         public IEnumerator<T> GetPostorderEnumerator()
         {
             if (ReferenceEquals(root, null))
@@ -285,11 +368,24 @@ namespace Task2.Logic
             return GetEnumerator();
         }
 
+        /// <summary>
+        /// Adds an <paramref name="item"/> in the current tree
+        /// </summary>
+        /// <param name="item"></param>
         void ICollection<T>.Add(T item)
         {
             Add(item);
         }
 
+        /// <summary>
+        /// Finds <paramref name="item"/> in the current tree, or potential parent
+        /// of <paramref name="item"/>
+        /// </summary>
+        /// <param name="item">item to find</param>
+        /// <param name="parent">parent of the founded item</param>
+        /// <returns>Reference to founded node</returns>
+        /// <exception cref="BinarySearchTreeException">Throws if 
+        /// comparer can't compare current items type</exception>
         private Node<T> FindItem(T item, out Node<T> parent)
         {
             parent = null;

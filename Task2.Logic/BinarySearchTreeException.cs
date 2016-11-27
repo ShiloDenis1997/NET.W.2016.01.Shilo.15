@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Task2.Logic
 {
+    /// <summary>
+    /// Exceptions for BinarySearch tree
+    /// </summary>
     public class BinarySearchTreeException : Exception
     {
         public BinarySearchTreeException() { }
