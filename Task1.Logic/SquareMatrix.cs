@@ -19,6 +19,8 @@ namespace Task1.Logic
         public SquareMatrix(T[,] matrix)
         {
             Dimension = matrix.GetLength(0);
+            if (matrix.GetLength(1) != Dimension)
+                throw new ArgumentException($"{nameof(matrix)} is not square matrix");
             this.matrix = new T[Dimension, Dimension];
             for (int i = 0; i < Dimension; i++)
                 for (int j = 0; j < Dimension; j++)
