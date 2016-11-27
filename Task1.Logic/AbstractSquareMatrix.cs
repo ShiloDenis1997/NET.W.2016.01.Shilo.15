@@ -5,7 +5,7 @@ namespace Task1.Logic
     public abstract class AbstractSquareMatrix<T>
     {
         private int dimension;
-        public event EventHandler<ElementChangedEventArgs> elementChangedEvent; 
+        public event EventHandler<ElementChangedEventArgs> ElementChanged; 
 
         public int Dimension {
             get { return dimension; }
@@ -25,7 +25,7 @@ namespace Task1.Logic
 
         protected void OnElementChanged(object sender, ElementChangedEventArgs e)
         {
-            elementChangedEvent?.Invoke(sender, e);
+            ElementChanged?.Invoke(sender, e);
         }
     }
 }

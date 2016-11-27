@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Task2.Logic.Tests", "Task2.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Task1.Logic", "Task1.Logic\Task1.Logic.csproj", "{66B045F6-AE4A-406F-81CF-1CF129A7AB36}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Task1.ExtensionLogic", "Task1.ExtensionLogic\Task1.ExtensionLogic.csproj", "{FADBE6BA-1493-4C8C-85B0-81EDC88215A2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{66B045F6-AE4A-406F-81CF-1CF129A7AB36}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{66B045F6-AE4A-406F-81CF-1CF129A7AB36}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{66B045F6-AE4A-406F-81CF-1CF129A7AB36}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FADBE6BA-1493-4C8C-85B0-81EDC88215A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FADBE6BA-1493-4C8C-85B0-81EDC88215A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FADBE6BA-1493-4C8C-85B0-81EDC88215A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FADBE6BA-1493-4C8C-85B0-81EDC88215A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
