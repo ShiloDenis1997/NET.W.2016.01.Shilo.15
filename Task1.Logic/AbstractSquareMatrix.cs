@@ -18,6 +18,11 @@ namespace Task1.Logic
             }
         }
 
+        public void Accept(IMatrixVisitor<T> visitor)
+        {
+            visitor.Visit((dynamic)this);
+        }
+
         protected void OnElementChanged(object sender, ElementChangedEventArgs e)
         {
             elementChangedEvent?.Invoke(sender, e);
