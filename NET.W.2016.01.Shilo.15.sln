@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Task1.Logic", "Task1.Logic\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Task1.ExtensionLogic", "Task1.ExtensionLogic\Task1.ExtensionLogic.csproj", "{FADBE6BA-1493-4C8C-85B0-81EDC88215A2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Task1.ExtensionLogicTests", "Task1.ExtensionLogicTests\Task1.ExtensionLogicTests.csproj", "{DBEEC70A-264C-491D-AEE2-0570BBFAE348}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Task1.LogicTests", "Task1.LogicTests\Task1.LogicTests.csproj", "{5E45FD74-6FFF-464B-A7D5-D82E3F8A4729}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{FADBE6BA-1493-4C8C-85B0-81EDC88215A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FADBE6BA-1493-4C8C-85B0-81EDC88215A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FADBE6BA-1493-4C8C-85B0-81EDC88215A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DBEEC70A-264C-491D-AEE2-0570BBFAE348}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBEEC70A-264C-491D-AEE2-0570BBFAE348}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBEEC70A-264C-491D-AEE2-0570BBFAE348}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBEEC70A-264C-491D-AEE2-0570BBFAE348}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E45FD74-6FFF-464B-A7D5-D82E3F8A4729}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E45FD74-6FFF-464B-A7D5-D82E3F8A4729}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E45FD74-6FFF-464B-A7D5-D82E3F8A4729}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E45FD74-6FFF-464B-A7D5-D82E3F8A4729}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
