@@ -47,6 +47,7 @@
     <Compile Include="DiagonalMatrixTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SquareMatrixTests.cs" />
+    <Compile Include="SymmetricMatrixTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

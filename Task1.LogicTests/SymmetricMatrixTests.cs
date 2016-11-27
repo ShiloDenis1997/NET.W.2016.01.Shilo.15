@@ -9,10 +9,10 @@ using Task1.Logic;
 namespace Task1.LogicTests
 {
     [TestFixture]
-    public class SquareMatrixTests
+    public class SymmetricMatrixTests
     {
         [Test]
-        public void Ctor_IntArray_SquareMatrixExpected()
+        public void Ctor_IntArray_SymmetricMatrixExpected()
         {
             //arrange
             int[,] array =
@@ -24,11 +24,11 @@ namespace Task1.LogicTests
                 {1, 2, 3, 4, 5},
             };
             //act
-            SquareMatrix<int> actualMatrix = new SquareMatrix<int>(array);
+            SymmetricMatrix<int> actualMatrix = new SymmetricMatrix<int>(array);
             //assert
             for (int i = 0; i < array.GetLength(0); i++)
                 for (int j = 0; j < array.GetLength(0); j++)
-                    Assert.AreEqual(array[i, j], actualMatrix[i, j]);
+                    Assert.AreEqual(array[Math.Max(i, j), Math.Min(i, j)], actualMatrix[i, j]);
         }
 
         [TestCase(1, 2, 2, typeof(ArgumentOutOfRangeException))]
@@ -40,7 +40,7 @@ namespace Task1.LogicTests
         public void Getter_ExceptionExpected(int size, int i, int j, Type exceptionType)
         {
             //arrange
-            SquareMatrix<int> matrix = new SquareMatrix<int>(size);
+            SymmetricMatrix<int> matrix = new SymmetricMatrix<int>(size);
             //act-assert
             Assert.Throws(exceptionType, () =>
             {
@@ -57,7 +57,7 @@ namespace Task1.LogicTests
         public void Setter_ExceptionExpected(int size, int i, int j, Type exceptionType)
         {
             //arrange
-            SquareMatrix<int> matrix = new SquareMatrix<int>(size);
+            SymmetricMatrix<int> matrix = new SymmetricMatrix<int>(size);
             //assert-act
             Assert.Throws(exceptionType, () =>
             {
@@ -73,7 +73,7 @@ namespace Task1.LogicTests
         {
             //arrange
             int resI = i + 1, resJ = 2;
-            SquareMatrix<int> matrix = new SquareMatrix<int>(size);
+            SymmetricMatrix<int> matrix = new SymmetricMatrix<int>(size);
             matrix.ElementChanged += (sender, args) =>
             {
                 resI = args.Row;
