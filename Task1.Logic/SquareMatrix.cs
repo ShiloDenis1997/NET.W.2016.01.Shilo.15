@@ -46,9 +46,8 @@ namespace Task1.Logic
                     throw new ArgumentOutOfRangeException
                         ($"{nameof(column)} is not in range with current dimension");
                 matrix[row, column] = value;
+                OnElementChanged(this, new ElementChangedEventArgs(row, column));
             }
         }
-
-
     }
 }

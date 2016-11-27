@@ -65,6 +65,7 @@ namespace Task1.Logic
                     throw new ArgumentOutOfRangeException
                         ($"{nameof(column)} is not in range with current dimension");
                 matrix[Math.Max(row, column)][Math.Min(row, column)] = value;
+                OnElementChanged(this, new ElementChangedEventArgs(row, column));
             }
         }
     }
