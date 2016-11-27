@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -306,6 +307,316 @@ namespace Task2.Logic.Tests
             BinarySearchTree<int> tree = new BinarySearchTree<int>(dataArray, comparer);
             //act
             IEnumerator<int> actual = tree.GetPostorderEnumerator();
+            //assert
+            int i = 0;
+            while (actual.MoveNext())
+            {
+                Assert.AreEqual(expectedDataOrder[i++], actual.Current);
+            }
+            Assert.AreEqual(i, expectedDataOrder.Length);
+        }
+        #endregion
+
+        #region System.String tests
+        public class StringCustomComparer : IComparer<string>
+        {
+            public int Compare(string x, string y)
+            {
+                return string.Compare(y, x, false, CultureInfo.InvariantCulture);
+            }
+        }
+
+        public static IEnumerable<TestCaseData> CtorStringTestData
+        {
+            get
+            {
+                yield return new TestCaseData(new[] { "aa", "ab", "ad", "ab", "aab", "ad" }, 4,
+                    new[] { "aa", "ab", "aab", "ad" }, new[] { "bc", "adf" }, null);
+                yield return new TestCaseData(new[] { "aa", "ab", "ad", "ab", "aab", "ad" }, 4,
+                    new[] { "aa", "ab", "aab", "ad" }, new[] { "bc", "adf" }, 
+                    new StringCustomComparer());
+            }
+        }
+
+        [TestCaseSource(nameof(CtorStringTestData))]
+        [Test]
+        public void Ctor_StringArray_TreeWithUniqueElementsExpected
+            (string[] array, int expectedCount, string[] expectedElements, string[] unexpectedElements,
+            IComparer<string> comparer)
+        {
+            //act
+            BinarySearchTree<string> actual = new BinarySearchTree<string>(array, comparer);
+            //assert
+            Assert.AreEqual(expectedCount, actual.Count);
+            CollectionAssert.AreEquivalent(expectedElements, actual);
+            foreach (var item in unexpectedElements)
+            {
+                CollectionAssert.DoesNotContain(actual, item);
+            }
+        }
+
+        public static IEnumerable<TestCaseData> AddStringTestData
+        {
+            get
+            {
+                yield return new TestCaseData(new[] { "aa", "ab", "ad", "ab", "aab", "ad" }, 4,
+                    new[] { "aa", "ab", "aab", "ad" },
+                    new[] { true, true, true, false, true, false },
+                    null);
+                yield return new TestCaseData(new[] { "aa", "ab", "ad", "ab", "aab", "ad" }, 4,
+                    new[] { "aa", "ab", "aab", "ad" },
+                    new[] { true, true, true, false, true, false },
+                    new StringCustomComparer());
+            }
+        }
+        [TestCaseSource(nameof(AddStringTestData))]
+        [Test]
+        public void Add_StringArray_TrueFalseResultsExpected
+            (string[] dataArray, int expextedSize, string[] expectedData, bool[] expectedResults,
+            IComparer<string> comparer)
+        {
+            //arrange
+            BinarySearchTree<string> tree = new BinarySearchTree<string>(comparer);
+            //act-assert
+            for (int i = 0; i < dataArray.Length; i++)
+            {
+                bool actual = tree.Add(dataArray[i]);
+                Assert.AreEqual(expectedResults[i], actual);
+            }
+            CollectionAssert.AreEquivalent(expectedData, tree);
+        }
+
+        public static IEnumerable<TestCaseData> ClearStringTestData
+        {
+            get
+            {
+                yield return new TestCaseData(
+                    new[] { "aa", "ab", "ad", "ab", "aab", "ad" }, 0,
+                    new[] { "aa", "ab", "aab", "ad" },
+                    null);
+                yield return new TestCaseData(
+                    new[] { "aa", "ab", "ad", "ab", "aab", "ad" }, 0,
+                    new[] { "aa", "ab", "aab", "ad" },
+                    new StringCustomComparer());
+            }
+        }
+        [TestCaseSource(nameof(ClearStringTestData))]
+        [Test]
+        public void Clear_StringArrayClear_EmptyTreeExpected
+            (string[] dataArray, int expextedSize, string[] unexpectedData,
+            IComparer<string> comparer)
+        {
+            //arrange
+            BinarySearchTree<string> tree = new BinarySearchTree<string>(dataArray, comparer);
+            //act
+            tree.Clear();
+            //assert
+            Assert.AreEqual(expextedSize, tree.Count);
+            foreach (var item in unexpectedData)
+            {
+                CollectionAssert.DoesNotContain(tree, item);
+            }
+        }
+
+        public static IEnumerable<TestCaseData> AddContainsStringTestData
+        {
+            get
+            {
+                yield return new TestCaseData(new[] { "aa", "ab", "ad", "ab", "aab", "ad" }, 0,
+                    new[] { "aa", "ab", "aab", "ad", "haha", "lol"},
+                    new[] { true, true, true, true, false, false }, null);
+                yield return new TestCaseData(new[] { "aa", "ab", "ad", "ab", "aab", "ad" }, 0,
+                    new[] { "aa", "ab", "aab", "ad", "haha", "lol" },
+                    new[] { true, true, true, true, false, false },
+                    new StringCustomComparer());
+            }
+        }
+        [TestCaseSource(nameof(AddContainsStringTestData))]
+        [Test]
+        public void AddContains_StringArray_TrueFalseResultsExpected
+            (string[] dataArray, int expextedSize, string[] testData, bool[] expectedResults,
+            IComparer<string> comparer)
+        {
+            //arrange
+            BinarySearchTree<string> tree = new BinarySearchTree<string>(dataArray, comparer);
+            //assert
+            for (int i = 0; i < testData.Length; i++)
+            {
+                bool actual = tree.Contains(testData[i]);
+                Assert.AreEqual(expectedResults[i], actual);
+            }
+        }
+
+        public static IEnumerable<TestCaseData> CopyToStringTestData
+        {
+            get
+            {
+                yield return new TestCaseData(
+                    new[] { "20", "10", "30", "5", "15", "35", "3", "8", "33" }, 9,
+                    new[] { "20", "10", "15", "30", "3", "5", "35", "33", "8" }, null);
+                yield return new TestCaseData(
+                    new[] { "20", "10", "30", "5", "15", "35", "3", "8", "33" }, 9,
+                    new[] { "20", "30", "5", "8", "35", "33", "3", "10", "15" },
+                    new StringCustomComparer());
+            }
+        }
+        [TestCaseSource(nameof(CopyToStringTestData))]
+        [Test]
+        public void CopyTo_StringArray_PreorderArrayExpected
+            (string[] dataArray, int expextedSize, string[] expectedDataOrder,
+            IComparer<string> comparer)
+        {
+            //arrange
+            BinarySearchTree<string> tree = new BinarySearchTree<string>(comparer);
+            string[] destArray = new string[expextedSize];
+            foreach (string t in dataArray)
+                tree.Add(t);
+            //act
+            tree.CopyTo(destArray, 0);
+            //assert
+            CollectionAssert.AreEqual(expectedDataOrder, destArray);
+        }
+
+        public static IEnumerable<TestCaseData> RemoveContainsStringTestData
+        {
+            get
+            {
+                yield return new TestCaseData(new[] { "20", "10", "30", "5", "15", "35", "3", "8", "33" }, 4,
+                    new[] { "20", "10", "15", "30", "35" }, new[] { "5", "3", "33", "8" }, null);
+                yield return new TestCaseData(new[] { "20", "10", "30", "5", "15", "35", "3", "8", "33" }, 4,
+                    new[] { "20", "10", "15", "30", "35" }, new[] { "5", "3", "33", "8" },
+                    new StringCustomComparer());
+                yield return new TestCaseData(new[] { "20", "10", "30", "5", "15", "35", "3", "8", "33" }, 8,
+                    new[] { "8" }, new[] { "20", "10", "30", "5", "15", "35", "3", "33" }, null);
+                yield return new TestCaseData(new[] { "20", "10", "30", "5", "15", "35", "3", "8", "33" }, 8,
+                    new[] { "8" }, new[] { "20", "10", "30", "5", "15", "35", "3", "33" },
+                    new StringCustomComparer());
+                yield return new TestCaseData(new[] { "20", "10", "30", "5", "15", "35", "3", "8", "33" }, 8,
+                    new[] { "30" }, new[] { "20", "10", "5", "15", "35", "3", "8", "33" }, null);
+                yield return new TestCaseData(new[] { "20", "10", "30", "5", "15", "35", "3", "8", "33" }, 8,
+                    new[] { "30" }, new[] { "20", "10", "5", "15", "35", "3", "8", "33" },
+                    new StringCustomComparer());
+                yield return new TestCaseData(new[] { "20", "10", "30", "5", "15", "35", "3", "8", "33" }, 8,
+                    new[] { "35" }, new[] { "20", "10", "30", "5", "15", "3", "8", "33" }, null);
+                yield return new TestCaseData(new[] { "20", "10", "30", "5", "15", "35", "3", "8", "33" }, 8,
+                    new[] { "35" }, new[] { "20", "10", "30", "5", "15", "3", "8", "33" },
+                    new StringCustomComparer());
+                yield return new TestCaseData(new[] { "20", "10", "30", "5", "15", "35", "3", "8", "33" }, 8,
+                    new[] { "20" }, new[] { "10", "30", "5", "15", "35", "3", "8", "33" }, null);
+                yield return new TestCaseData(new[] { "20", "10", "30", "5", "15", "35", "3", "8", "33" }, 8,
+                    new[] { "20" }, new[] { "10", "30", "5", "15", "35", "3", "8", "33" },
+                    new StringCustomComparer());
+                yield return new TestCaseData(new[] { "20", "10", "30", "5", "15", "35", "3", "8", "33" }, 8,
+                    new[] { "10" }, new[] { "20", "30", "5", "15", "35", "3", "8", "33" }, null);
+                yield return new TestCaseData(new[] { "20", "10", "30", "5", "15", "35", "3", "8", "33" }, 8,
+                    new[] { "10" }, new[] { "20", "30", "5", "15", "35", "3", "8", "33" }, new StringCustomComparer());
+            }
+        }
+        [TestCaseSource(nameof(RemoveContainsStringTestData))]
+        [Test]
+        public void RemoveContains_StringArray_TrueFalseResultsExpected
+            (string[] dataArray, int expextedSize, string[] dataToDelete,
+                string[] remainingData, IComparer<string> comparer)
+        {
+            //arrange
+            BinarySearchTree<string> tree = new BinarySearchTree<string>(dataArray, comparer);
+            //act-assert
+            foreach (string t in dataToDelete)
+            {
+                bool actual = tree.Remove(t);
+                Assert.AreEqual(true, actual);
+                actual = tree.Remove(t);
+                Assert.AreEqual(false, actual);
+            }
+            //assert
+            Assert.AreEqual(expextedSize, tree.Count);
+            foreach (var item in dataToDelete)
+            {
+                Assert.AreEqual(false, tree.Contains(item));
+            }
+            foreach (var item in remainingData)
+            {
+                Assert.AreEqual(true, tree.Contains(item));
+            }
+            CollectionAssert.AreEquivalent(remainingData, tree);
+        }
+
+        public static IEnumerable<TestCaseData> GetPreorderEnumeratorStringTestData
+        {
+            get
+            {
+                yield return new TestCaseData(new[] { "20", "10", "30", "5", "15", "35", "3", "8", "33" },
+                    new[] { "20", "10", "15", "30", "3", "5", "35", "33", "8" }, null);
+                yield return new TestCaseData(new[] { "20", "10", "30", "5", "15", "35", "3", "8", "33" },
+                    new[] { "20", "30", "5", "8", "35", "33", "3", "10", "15" },
+                    new StringCustomComparer());
+            }
+        }
+        [TestCaseSource(nameof(GetPreorderEnumeratorStringTestData))]
+        [Test]
+        public void GetPreorderEnumerator_StringArray_preorderEnumerationExpected
+            (string[] dataArray, string[] expectedDataOrder, IComparer<string> comparer)
+        {
+            //arrange
+            BinarySearchTree<string> tree = new BinarySearchTree<string>(dataArray, comparer);
+            //act
+            IEnumerator<string> actual = tree.GetPreorderEnumerator();
+            //assert
+            int i = 0;
+            while (actual.MoveNext())
+            {
+                Assert.AreEqual(expectedDataOrder[i++], actual.Current);
+            }
+            Assert.AreEqual(i, expectedDataOrder.Length);
+        }
+
+        public static IEnumerable<TestCaseData> GetInorderEnumeratorStringTestData
+        {
+            get
+            {
+                yield return new TestCaseData(new[] { "20", "10", "30", "5", "15", "35", "3", "8", "33" },
+                    new[] { "10", "15", "20", "3", "30", "33", "35", "5", "8" }, null);
+                yield return new TestCaseData(new[] { "20", "10", "30", "5", "15", "35", "3", "8", "33" },
+                    new[] { "8", "5", "35", "33", "30", "3", "20", "15", "10" }, new StringCustomComparer());
+            }
+        }
+        [TestCaseSource(nameof(GetInorderEnumeratorStringTestData))]
+        [Test]
+        public void GetInorderEnumerator_StringArray_preorderEnumerationExpected
+            (string[] dataArray, string[] expectedDataOrder, IComparer<string> comparer)
+        {
+            //arrange
+            BinarySearchTree<string> tree = new BinarySearchTree<string>(dataArray, comparer);
+            //act
+            IEnumerator<string> actual = tree.GetInorderEnumerator();
+            //assert
+            int i = 0;
+            while (actual.MoveNext())
+            {
+                Assert.AreEqual(expectedDataOrder[i++], actual.Current);
+            }
+            Assert.AreEqual(i, expectedDataOrder.Length);
+        }
+
+        public static IEnumerable<TestCaseData> GetPostorderEnumeratorStringTestData
+        {
+            get
+            {
+                yield return new TestCaseData(new[] { "20", "10", "30", "5", "15", "35", "3", "8", "33" },
+                    new[] { "15", "10", "3", "33", "35", "8", "5", "30", "20" }, null);
+                yield return new TestCaseData(new[] { "20", "10", "30", "5", "15", "35", "3", "8", "33" },
+                    new[] { "8", "33", "35", "5", "3", "30", "15", "10", "20" }, new StringCustomComparer());
+            }
+        }
+        [TestCaseSource(nameof(GetPostorderEnumeratorStringTestData))]
+        [Test]
+        public void GetPostorderEnumerator_StringArray_preorderEnumerationExpected
+            (string[] dataArray, string[] expectedDataOrder, IComparer<string> comparer)
+        {
+            //arrange
+            BinarySearchTree<string> tree = new BinarySearchTree<string>(dataArray, comparer);
+            //act
+            IEnumerator<string> actual = tree.GetPostorderEnumerator();
             //assert
             int i = 0;
             while (actual.MoveNext())
