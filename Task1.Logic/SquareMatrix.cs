@@ -8,7 +8,7 @@ namespace Task1.Logic
 {
     public class SquareMatrix<T> : AbstractSquareMatrix<T>
     {
-        private T[,] matrix;
+        private readonly T[,] matrix;
 
         public SquareMatrix(int dimension)
         {
@@ -48,5 +48,7 @@ namespace Task1.Logic
                 matrix[row, column] = value;
             }
         }
+
+
     }
 }

@@ -18,5 +18,9 @@ namespace Task1.Logic
             }
         }
 
+        protected void OnElementChanged(object sender, ElementChangedEventArgs e)
+        {
+            elementChangedEvent?.Invoke(sender, e);
+        }
     }
 }
