@@ -8,7 +8,7 @@ namespace Task1.Logic
 {
     public class SymmetricMatrix<T> : AbstractSquareMatrix<T>
     {
-        private T[][] matrix;
+        private readonly T[][] matrix;
 
         public SymmetricMatrix(int dimension)
         {

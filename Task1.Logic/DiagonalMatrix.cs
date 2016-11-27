@@ -8,7 +8,7 @@ namespace Task1.Logic
 {
     public class DiagonalMatrix<T> : AbstractSquareMatrix<T>
     {
-        private T[] diagonal;
+        private readonly T[] diagonal;
 
         public DiagonalMatrix(int dimension)
         {
@@ -19,7 +19,9 @@ namespace Task1.Logic
         public DiagonalMatrix(T[] diagonal)
         {
             Dimension = diagonal.Length;
-            diagonal = new T[Dimension];
+            this.diagonal = new T[Dimension];
+            for (int i = 0; i < Dimension; i++)
+                this.diagonal[i] = diagonal[i];
         }
 
         public T this[int row, int column]
