@@ -75,40 +75,20 @@ namespace Task1.Logic
                     this.matrix[i][j] = matrix[i][j];
             }
         }
+        
+        /// <summary>
+        /// Sets an element of symmetric matrix. Symmetric element is
+        /// also setted to <paramref name="element"/> value
+        /// </summary>
+        protected override void SetElement(T element, int row, int column)
+        {
+            matrix[Math.Max(row, column)][Math.Min(row, column)] = element;
+        }
 
         /// <summary>
-        /// Indexator to set/get elements of matrix. Setting one element
-        /// automatically sets symmetric element
+        /// Gets an element of symmetric matrix
         /// </summary>
-        /// <param name="row">row index</param>
-        /// <param name="column">column index</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentOutOfRangeException">Throws if <paramref name="row"/>
-        /// or <paramref name="column"/> is less than zero or greater,
-        /// equal than dimension</exception>
-        public T this[int row, int column]
-        {
-            get
-            {
-                if (row < 0 || row >= Dimension)
-                    throw new ArgumentOutOfRangeException
-                        ($"{nameof(row)} is not in range with current dimension");
-                if (column < 0 || column >= Dimension)
-                    throw new ArgumentOutOfRangeException
-                        ($"{nameof(column)} is not in range with current dimension");
-                return matrix[Math.Max(row, column)][ Math.Min(row, column)];
-            }
-            set
-            {
-                if (row < 0 || row >= Dimension)
-                    throw new ArgumentOutOfRangeException
-                        ($"{nameof(row)} is not in range with current dimension");
-                if (column < 0 || column >= Dimension)
-                    throw new ArgumentOutOfRangeException
-                        ($"{nameof(column)} is not in range with current dimension");
-                matrix[Math.Max(row, column)][Math.Min(row, column)] = value;
-                OnElementChanged(this, new ElementChangedEventArgs(row, column));
-            }
-        }
+        protected override T GetElement(int row, int column) 
+            => matrix[Math.Max(row, column)][Math.Min(row, column)];
     }
 }

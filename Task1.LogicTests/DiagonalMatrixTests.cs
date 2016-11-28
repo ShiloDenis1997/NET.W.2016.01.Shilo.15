@@ -29,11 +29,33 @@ namespace Task1.LogicTests
                     }
         }
 
-        [TestCase(1, 2, 2, typeof(ArgumentOutOfRangeException))]
-        [TestCase(3, 2, 3, typeof(ArgumentOutOfRangeException))]
-        [TestCase(4, -1, 2, typeof(ArgumentOutOfRangeException))]
-        [TestCase(5, 5, 2, typeof(ArgumentOutOfRangeException))]
-        [TestCase(5, 3, -1, typeof(ArgumentOutOfRangeException))]
+        [Test]
+        public void GetEnumerator_ElementsOfMatrixExpected()
+        {
+            //arrange
+            int[] array = {1, 2, 3, 4, 5};
+
+            DiagonalMatrix<int> actualMatrix = new DiagonalMatrix<int>(array);
+            //act
+            IEnumerator<int> enumerator = actualMatrix.GetEnumerator();
+            enumerator.MoveNext();
+            //assert
+            for (int i = 0; i < array.GetLength(0); i++)
+                for (int j = 0; j < array.GetLength(0); j++)
+                {
+                    if (i == j)
+                        Assert.AreEqual(array[i], enumerator.Current);
+                    else
+                        Assert.AreEqual(0, enumerator.Current);
+                    enumerator.MoveNext();
+                }
+        }
+
+        [TestCase(1, 2, 2, typeof(InvalidMatrixIndexException))]
+        [TestCase(3, 2, 3, typeof(InvalidMatrixIndexException))]
+        [TestCase(4, -1, 2, typeof(InvalidMatrixIndexException))]
+        [TestCase(5, 5, 2, typeof(InvalidMatrixIndexException))]
+        [TestCase(5, 3, -1, typeof(InvalidMatrixIndexException))]
         [Test]
         public void Getter_ExceptionExpected(int size, int i, int j, Type exceptionType)
         {
@@ -46,13 +68,13 @@ namespace Task1.LogicTests
             });
         }
 
-        [TestCase(1, 2, 2, typeof(ArgumentOutOfRangeException))]
-        [TestCase(3, 2, 3, typeof(ArgumentOutOfRangeException))]
-        [TestCase(4, -1, 2, typeof(ArgumentOutOfRangeException))]
-        [TestCase(5, 5, 2, typeof(ArgumentOutOfRangeException))]
-        [TestCase(5, 3, -1, typeof(ArgumentOutOfRangeException))]
-        [TestCase(5, 3, 2, typeof(ArgumentException))]
-        [TestCase(5, 3, 1, typeof(ArgumentException))]
+        [TestCase(1, 2, 2, typeof(InvalidMatrixIndexException))]
+        [TestCase(3, 2, 3, typeof(InvalidMatrixIndexException))]
+        [TestCase(4, -1, 2, typeof(InvalidMatrixIndexException))]
+        [TestCase(5, 5, 2, typeof(InvalidMatrixIndexException))]
+        [TestCase(5, 3, -1, typeof(InvalidMatrixIndexException))]
+        [TestCase(5, 3, 2, typeof(InvalidMatrixIndexException))]
+        [TestCase(5, 3, 1, typeof(InvalidMatrixIndexException))]
         [Test]
         public void Setter_ExceptionExpected(int size, int i, int j, Type exceptionType)
         {

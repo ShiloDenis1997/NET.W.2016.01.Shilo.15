@@ -51,37 +51,19 @@ namespace Task1.Logic
         }
 
         /// <summary>
-        /// Indexator to set/get elements of matrix
+        /// Sets an element of square matrix
         /// </summary>
-        /// <param name="row">row index</param>
-        /// <param name="column">column index</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentOutOfRangeException">Throws if <paramref name="row"/>
-        /// or <paramref name="column"/> is less than zero or greater,
-        /// equal than dimension</exception>
-        public T this[int row, int column]
+        protected override void SetElement(T element, int row, int column)
         {
-            get
-            {
-                if (row < 0 || row >= Dimension)
-                    throw new ArgumentOutOfRangeException
-                        ($"{nameof(row)} is not in range with current dimension");
-                if (column < 0 || column >= Dimension)
-                    throw new ArgumentOutOfRangeException
-                        ($"{nameof(column)} is not in range with current dimension");
-                return matrix[row, column];
-            }
-            set
-            {
-                if (row < 0 || row >= Dimension)
-                    throw new ArgumentOutOfRangeException
-                        ($"{nameof(row)} is not in range with current dimension");
-                if (column < 0 || column >= Dimension)
-                    throw new ArgumentOutOfRangeException
-                        ($"{nameof(column)} is not in range with current dimension");
-                matrix[row, column] = value;
-                OnElementChanged(this, new ElementChangedEventArgs(row, column));
-            }
+            matrix[row, column] = element;
+        }
+
+        /// <summary>
+        /// Gets an elemen of square matrix
+        /// </summary>
+        protected override T GetElement(int row, int column)
+        {
+            return matrix[row, column];
         }
     }
 }

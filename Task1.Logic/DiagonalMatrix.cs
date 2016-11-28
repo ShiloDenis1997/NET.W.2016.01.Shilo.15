@@ -52,42 +52,22 @@ namespace Task1.Logic
         }
 
         /// <summary>
-        /// Indexator to set/get elements of matrix
+        /// Sets an element of diagonal matrix
         /// </summary>
-        /// <param name="row">row index</param>
-        /// <param name="column">column index</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentOutOfRangeException">Throws if <paramref name="row"/>
-        /// or <paramref name="column"/> is less than zero or greater,
-        /// equal than dimension</exception>
-        /// <exception cref="ArgumentException">Throws when trying to set 
-        /// non-diagonal element</exception>
-        public T this[int row, int column]
+        /// <exception cref="InvalidMatrixIndexException">Throws if
+        /// <paramref name="row"/> is not equal to <paramref name="column"/></exception>
+        protected override void SetElement(T element, int row, int column)
         {
-            get
-            {
-                if (row < 0 || row >= Dimension)
-                    throw new ArgumentOutOfRangeException
-                        ($"{nameof(row)} is not in range with current dimension");
-                if (column < 0 || column >= Dimension)
-                    throw new ArgumentOutOfRangeException
-                        ($"{nameof(column)} is not in range with current dimension");
-                return row != column ? default(T) : diagonal[row];
-            }
-            set
-            {
-                if (row < 0 || row >= Dimension)
-                    throw new ArgumentOutOfRangeException
-                        ($"{nameof(row)} is not in range with current dimension");
-                if (column < 0 || column >= Dimension)
-                    throw new ArgumentOutOfRangeException
-                        ($"{nameof(column)} is not in range with current dimension");
-                if (row != column)
-                    throw new ArgumentException
-                        ("Cannot set nondiagonal element for diagonal matrix");
-                diagonal[row] = value;
-                OnElementChanged(this, new ElementChangedEventArgs(row, column));
-            }
+            if (row != column)
+                throw new InvalidMatrixIndexException
+                    ("Trying to set non-diagonal element");
+            diagonal[row] = element;
         }
+
+        /// <summary>
+        /// Gets an element of diagonal matrix
+        /// </summary>
+        protected override T GetElement(int row, int column)
+            => row == column ? diagonal[row] : default(T);
     }
 }
