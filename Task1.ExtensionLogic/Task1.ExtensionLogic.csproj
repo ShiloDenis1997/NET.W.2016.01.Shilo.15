@@ -41,7 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MatrixExtensions.cs" />
-    <Compile Include="MatrixSumVisitor.cs" />
+    <Compile Include="MatrixExtensionsException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

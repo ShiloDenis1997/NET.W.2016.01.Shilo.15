@@ -70,19 +70,6 @@ namespace Task1.Logic
         }
 
         /// <summary>
-        /// Accepts visitor to extends functionallity
-        /// </summary>
-        /// <param name="visitor"></param>
-        /// <exception cref="ArgumentNullException">Throws 
-        /// if <paramref name="visitor"/> is null</exception>
-        public void Accept(IMatrixVisitor<T> visitor)
-        {
-            if (ReferenceEquals(visitor, null))
-                throw new ArgumentNullException($"{nameof(visitor)} is null");
-            visitor.Visit((dynamic)this);
-        }
-
-        /// <summary>
         /// Abstract method to set element of matrix. Implement it with
         /// specific matrix logic
         /// </summary>

@@ -20,13 +20,34 @@ namespace Task1.ExtensionLogicTests
             };
             AbstractSquareMatrix<int> firstMatrix = new SquareMatrix<int>(matrix);
             AbstractSquareMatrix<int> secondMatrix = new SquareMatrix<int>(matrix);
-            var resultMatrix = (SquareMatrix<int>)MatrixExtensions.MatrixSum
-                (firstMatrix, secondMatrix, (a, b) => a + b);
+            var resultMatrix = MatrixExtensions.AddMatrix
+                (firstMatrix, secondMatrix);
+            Assert.AreEqual(typeof(SquareMatrix<int>), resultMatrix.GetType());
             for (int i = 0; i < resultMatrix.Dimension; i++)
                 for (int j = 0; j < resultMatrix.Dimension; j++)
-                    Assert.AreEqual(matrix[i, j]*2, resultMatrix[i, j]);
+                    Assert.AreEqual(firstMatrix[i, j] + secondMatrix[i, j], resultMatrix[i, j]);
         }
 
+        [Test]
+        public void MatrixSum_IntSquareDiagonal_SumMatrixExpected()
+        {
+            int[,] matrix =
+            {
+                {1, 2, 3, 4},
+                {1, 2, 3, 4},
+                {5, 2, 3, 6},
+                {3, 5, 2, 1},
+            };
+            int[] diagonal = {1, 2, 3, 4};
+            AbstractSquareMatrix<int> firstMatrix = new SquareMatrix<int>(matrix);
+            AbstractSquareMatrix<int> secondMatrix = new DiagonalMatrix<int>(diagonal);
+            var resultMatrix = MatrixExtensions.AddMatrix
+                (firstMatrix, secondMatrix);
+            Assert.AreEqual(typeof(SquareMatrix<int>), resultMatrix.GetType());
+            for (int i = 0; i < resultMatrix.Dimension; i++)
+                for (int j = 0; j < resultMatrix.Dimension; j++)
+                    Assert.AreEqual(firstMatrix[i, j] + secondMatrix[i, j], resultMatrix[i, j]);
+        }
         public class IntWrapper
         {
             public int X { get; set; }
@@ -35,26 +56,6 @@ namespace Task1.ExtensionLogicTests
             {
                 X = x;
             }
-        }
-        [Test]
-        public void MatrixSum_IntWrapperSquareSquare_SumMatrixExpected()
-        {
-            IntWrapper[,] matrix =
-            {
-                {new IntWrapper(1), new IntWrapper(2), new IntWrapper(3), new IntWrapper(4)},
-                {new IntWrapper(1), new IntWrapper(2), new IntWrapper(3), new IntWrapper(4)},
-                {new IntWrapper(5), new IntWrapper(2), new IntWrapper(3), new IntWrapper(6)},
-                {new IntWrapper(3), new IntWrapper(5), new IntWrapper(2), new IntWrapper(1)},
-            };
-            AbstractSquareMatrix<IntWrapper> firstMatrix = 
-                new SquareMatrix<IntWrapper>(matrix);
-            AbstractSquareMatrix<IntWrapper> secondMatrix = 
-                new SquareMatrix<IntWrapper>(matrix);
-            var resultMatrix = (SquareMatrix<IntWrapper>) MatrixExtensions
-                .MatrixSum(firstMatrix, secondMatrix, (a, b) => new IntWrapper(a.X + b.X));
-            for (int i = 0; i < resultMatrix.Dimension; i++)
-                for (int j = 0; j < resultMatrix.Dimension; j++)
-                    Assert.AreEqual(matrix[i, j].X * 2, resultMatrix[i, j].X);
         }
 
         [Test]
@@ -69,65 +70,52 @@ namespace Task1.ExtensionLogicTests
             };
             AbstractSquareMatrix<int> firstMatrix = new SquareMatrix<int>(matrix);
             AbstractSquareMatrix<int> secondMatrix = new SymmetricMatrix<int>(matrix);
-            var resultMatrix = (SquareMatrix<int>)MatrixExtensions.MatrixSum
-                (firstMatrix, secondMatrix, (a, b) => a + b);
+            var resultMatrix = MatrixExtensions.AddMatrix
+                (firstMatrix, secondMatrix);
+            Assert.AreEqual(typeof(SquareMatrix<int>), resultMatrix.GetType());
             for (int i = 0; i < resultMatrix.Dimension; i++)
                 for (int j = 0; j < resultMatrix.Dimension; j++)
-                    Assert.AreEqual(matrix[i, j] + matrix[Math.Max(i, j), Math.Min(i, j)],
-                        resultMatrix[i, j]);
+                    Assert.AreEqual(firstMatrix[i, j] + secondMatrix[i, j], resultMatrix[i, j]);
         }
 
         [Test]
-        public void MatrixSum_IntWrapperSquareSymmetric_SumMatrixExpected()
+        public void MatrixSum_IntSymmetricSymmetric_SumMatrixExpected()
         {
-            IntWrapper[,] matrix =
+            int[,] matrix =
             {
-                {new IntWrapper(1), new IntWrapper(2), new IntWrapper(3), new IntWrapper(4)},
-                {new IntWrapper(1), new IntWrapper(2), new IntWrapper(3), new IntWrapper(4)},
-                {new IntWrapper(5), new IntWrapper(2), new IntWrapper(3), new IntWrapper(6)},
-                {new IntWrapper(3), new IntWrapper(5), new IntWrapper(2), new IntWrapper(1)},
+                {1, 2, 3, 4},
+                {1, 2, 3, 4},
+                {5, 2, 3, 6},
+                {3, 5, 2, 1},
             };
-            AbstractSquareMatrix<IntWrapper> firstMatrix =
-                new SquareMatrix<IntWrapper>(matrix);
-            AbstractSquareMatrix<IntWrapper> secondMatrix =
-                new SymmetricMatrix<IntWrapper>(matrix);
-            var resultMatrix = (SquareMatrix<IntWrapper>)MatrixExtensions
-                .MatrixSum(firstMatrix, secondMatrix, (a, b) => new IntWrapper(a.X + b.X));
+            AbstractSquareMatrix<int> firstMatrix = new SymmetricMatrix<int>(matrix);
+            AbstractSquareMatrix<int> secondMatrix = new SymmetricMatrix<int>(matrix);
+            var resultMatrix = MatrixExtensions.AddMatrix
+                (firstMatrix, secondMatrix);
+            Assert.AreEqual(typeof(SymmetricMatrix<int>), resultMatrix.GetType());
             for (int i = 0; i < resultMatrix.Dimension; i++)
                 for (int j = 0; j < resultMatrix.Dimension; j++)
-                    Assert.AreEqual(matrix[i, j].X + matrix[Math.Max(i, j), Math.Min(i, j)].X,
-                        resultMatrix[i, j].X);
+                    Assert.AreEqual(firstMatrix[i, j] + secondMatrix[i, j], resultMatrix[i, j]);
         }
 
         [Test]
-        public void MatrixSum_IntWrapperSymmetricDiagonal_SumMatrixExpected()
+        public void MatrixSum_IntSymmetricSquare_SumMatrixExpected()
         {
-            IntWrapper[,] matrix =
+            int[,] matrix =
             {
-                {new IntWrapper(1), new IntWrapper(2), new IntWrapper(3), new IntWrapper(4)},
-                {new IntWrapper(1), new IntWrapper(2), new IntWrapper(3), new IntWrapper(4)},
-                {new IntWrapper(5), new IntWrapper(2), new IntWrapper(3), new IntWrapper(6)},
-                {new IntWrapper(3), new IntWrapper(5), new IntWrapper(2), new IntWrapper(1)},
+                {1,    2, 3, 4},
+                {1, 2,    3, 4},
+                {5, 2, 3,    6},
+                {3, 5, 2, 1},
             };
-            IntWrapper[] diagonal = 
-                {new IntWrapper(1), new IntWrapper(2), new IntWrapper(3), new IntWrapper(4)};
-            AbstractSquareMatrix<IntWrapper> firstMatrix =
-                new SymmetricMatrix<IntWrapper>(matrix);
-            AbstractSquareMatrix<IntWrapper> secondMatrix =
-                new DiagonalMatrix<IntWrapper>(diagonal);
-            var resultMatrix = (SquareMatrix<IntWrapper>)MatrixExtensions
-                .MatrixSum(firstMatrix, secondMatrix, (a, b) => 
-                new IntWrapper((a?.X ?? 0) + (b?.X ?? 0)));
+            AbstractSquareMatrix<int> firstMatrix = new SquareMatrix<int>(matrix);
+            AbstractSquareMatrix<int> secondMatrix = new SymmetricMatrix<int>(matrix);
+            var resultMatrix = MatrixExtensions.AddMatrix
+                (secondMatrix, firstMatrix);
+            Assert.AreEqual(typeof(SquareMatrix<int>), resultMatrix.GetType());
             for (int i = 0; i < resultMatrix.Dimension; i++)
                 for (int j = 0; j < resultMatrix.Dimension; j++)
-                    if (i == j)
-                        Assert.AreEqual(matrix[i, j].X + diagonal[i].X,
-                            resultMatrix[i, j].X);
-                    else
-                    {
-                        Assert.AreEqual(matrix[Math.Max(i, j), Math.Min(i, j)].X, 
-                            resultMatrix[i, j].X);
-                    }
+                    Assert.AreEqual(firstMatrix[i, j] + secondMatrix[i, j], resultMatrix[i, j]);
         }
 
         [Test]
@@ -143,15 +131,78 @@ namespace Task1.ExtensionLogicTests
             int[] diagonal = {1, 2, 3, 4};
             AbstractSquareMatrix<int> firstMatrix = new SymmetricMatrix<int>(matrix);
             AbstractSquareMatrix<int> secondMatrix = new DiagonalMatrix<int>(diagonal);
-            var resultMatrix = (SquareMatrix<int>)MatrixExtensions.MatrixSum
-                (firstMatrix, secondMatrix, (a, b) => a + b);
+            var resultMatrix = MatrixExtensions.AddMatrix
+                (firstMatrix, secondMatrix);
+            Assert.AreEqual(typeof(SymmetricMatrix<int>), resultMatrix.GetType());
             for (int i = 0; i < resultMatrix.Dimension; i++)
                 for (int j = 0; j < resultMatrix.Dimension; j++)
-                    if (i == j)
-                        Assert.AreEqual(matrix[i, j] + diagonal[i], resultMatrix[i, j]);
-                    else
-                        Assert.AreEqual(matrix[Math.Max(i, j), Math.Min(i, j)],
-                            resultMatrix[i, j]);
+                    Assert.AreEqual(firstMatrix[i, j] + secondMatrix[i, j], resultMatrix[i, j]);
+        }
+
+        [Test]
+        public void MatrixSum_IntDiagonalSymmetric_SumMatrixExpected()
+        {
+            int[,] matrix =
+            {
+                {1,    2, 3, 4},
+                {1, 2,    3, 4},
+                {5, 2, 3,    6},
+                {3, 5, 2, 1},
+            };
+            int[] diagonal = { 1, 2, 3, 4 };
+            AbstractSquareMatrix<int> firstMatrix = new SymmetricMatrix<int>(matrix);
+            AbstractSquareMatrix<int> secondMatrix = new DiagonalMatrix<int>(diagonal);
+            var resultMatrix = MatrixExtensions.AddMatrix
+                (secondMatrix, firstMatrix);
+            Assert.AreEqual(typeof(SymmetricMatrix<int>), resultMatrix.GetType());
+            for (int i = 0; i < resultMatrix.Dimension; i++)
+                for (int j = 0; j < resultMatrix.Dimension; j++)
+                    Assert.AreEqual(firstMatrix[i, j] + secondMatrix[i, j], resultMatrix[i, j]);
+        }
+
+        [Test]
+        public void MatrixSum_IntDiagonalSquare_SumMatrixExpected()
+        {
+            int[,] matrix =
+            {
+                {1,    2, 3, 4},
+                {1, 2,    3, 4},
+                {5, 2, 3,    6},
+                {3, 5, 2, 1},
+            };
+            int[] diagonal = { 1, 2, 3, 4 };
+            AbstractSquareMatrix<int> firstMatrix = new SquareMatrix<int>(matrix);
+            AbstractSquareMatrix<int> secondMatrix = new DiagonalMatrix<int>(diagonal);
+            var resultMatrix = MatrixExtensions.AddMatrix
+                (secondMatrix, firstMatrix);
+            Assert.AreEqual(typeof(SquareMatrix<int>), resultMatrix.GetType());
+            for (int i = 0; i < resultMatrix.Dimension; i++)
+                for (int j = 0; j < resultMatrix.Dimension; j++)
+                    Assert.AreEqual(firstMatrix[i, j] + secondMatrix[i, j], resultMatrix[i, j]);
+        }
+
+        [Test]
+        public void MatrixSum_IntDiagonalDiagonal_SumMatrixExpected()
+        {
+            int[] diagonal = { 1, 2, 3, 4 };
+            AbstractSquareMatrix<int> firstMatrix = new DiagonalMatrix<int>(diagonal);
+            AbstractSquareMatrix<int> secondMatrix = new DiagonalMatrix<int>(diagonal);
+            var resultMatrix = MatrixExtensions.AddMatrix
+                (secondMatrix, firstMatrix);
+            Assert.AreEqual(typeof(DiagonalMatrix<int>), resultMatrix.GetType());
+            for (int i = 0; i < resultMatrix.Dimension; i++)
+                for (int j = 0; j < resultMatrix.Dimension; j++)
+                    Assert.AreEqual(firstMatrix[i, j] + secondMatrix[i, j], resultMatrix[i, j]);
+        }
+
+        [Test]
+        public void MatrixSum_MarixExtensionsExceptionExpected()
+        {
+            //arrange
+            DiagonalMatrix<Random> matrix = new DiagonalMatrix<Random>
+                (new [] {new Random(), new Random()});
+            //assert
+            Assert.Throws(typeof(MatrixExtensionsException), () => matrix.AddMatrix(matrix));
         }
     }
 }

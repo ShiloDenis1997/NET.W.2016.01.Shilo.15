@@ -42,7 +42,6 @@
   <ItemGroup>
     <Compile Include="AbstractSquareMatrix.cs" />
     <Compile Include="DiagonalMatrix.cs" />
-    <Compile Include="IMatrixVisitor.cs" />
     <Compile Include="InvalidMatrixIndexException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SquareMatrix.cs" />
