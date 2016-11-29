@@ -41,7 +41,7 @@ namespace Task1.Logic
         /// is less or equal to zero</exception>
         /// <exception cref="ArgumentNullException">Throws if 
         /// <paramref name="diagonal"/> is null</exception>
-        public DiagonalMatrix(T[] diagonal)
+        public DiagonalMatrix(params T[] diagonal)
         {
             if (ReferenceEquals(diagonal, null))
                 throw new ArgumentNullException($"{nameof(diagonal)} is null");

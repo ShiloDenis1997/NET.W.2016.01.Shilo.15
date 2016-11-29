@@ -12,7 +12,7 @@ namespace Task1.Logic
     /// <typeparam name="T"></typeparam>
     public class SymmetricMatrix<T> : AbstractSquareMatrix<T>
     {
-        private readonly T[][] matrix;
+        private readonly T[] matrix;
 
         /// <summary>
         /// Initializes neew instance of <see cref="SymmetricMatrix{T}"/>
@@ -24,9 +24,7 @@ namespace Task1.Logic
         public SymmetricMatrix(int dimension)
         {
             Dimension = dimension;
-            matrix = new T[Dimension][];
-            for (int i = 0; i < Dimension; i++)
-                matrix[i] = new T[i + 1];
+            matrix = new T[Dimension * (Dimension + 1) / 2];
         }
 
         /// <summary>
@@ -41,14 +39,13 @@ namespace Task1.Logic
         public SymmetricMatrix(T[,] matrix)
         {
             Dimension = matrix.GetLength(0);
-            this.matrix = new T[Dimension][];
+            this.matrix = new T[Dimension * (Dimension + 1) / 2];
             if (matrix.GetLength(1) != Dimension)
                 throw new ArgumentException($"{nameof(matrix)} is not square matrix");
             for (int i = 0; i < Dimension; i++)
             {
-                this.matrix[i] = new T[i + 1];
                 for (int j = 0; j <= i; j++)
-                    this.matrix[i][j] = matrix[i, j];
+                    this[i, j] = matrix[i, j];
             }
         }
 
@@ -65,14 +62,13 @@ namespace Task1.Logic
         public SymmetricMatrix(T[][] matrix)
         {
             Dimension = matrix.GetLength(0);
-            this.matrix = new T[Dimension][];
+            this.matrix = new T[Dimension * (Dimension + 1) / 2];
             for (int i = 0; i < Dimension; i++)
             {
                 if (matrix[i].Length != i + 1)
                     throw new ArgumentException($"{nameof(matrix)} is not triangular");
-                this.matrix[i] = new T[i + 1];
                 for (int j = 0; j <= i; j++)
-                    this.matrix[i][j] = matrix[i][j];
+                    this[i, j] = matrix[i][j];
             }
         }
         
@@ -82,13 +78,13 @@ namespace Task1.Logic
         /// </summary>
         protected override void SetElement(T element, int row, int column)
         {
-            matrix[Math.Max(row, column)][Math.Min(row, column)] = element;
+            matrix[Math.Max(row, column) * (Math.Max(row, column) + 1) / 2 + Math.Min(row, column)] = element;
         }
 
         /// <summary>
         /// Gets an element of symmetric matrix
         /// </summary>
         protected override T GetElement(int row, int column) 
-            => matrix[Math.Max(row, column)][Math.Min(row, column)];
+            => matrix[Math.Max(row, column) * (Math.Max(row, column) + 1) / 2 + Math.Min(row, column)];
     }
 }

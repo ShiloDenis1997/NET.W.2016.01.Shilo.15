@@ -15,7 +15,7 @@ namespace Task1.Logic
         /// <summary>
         /// Inner storage for matrixes elements
         /// </summary>
-        private readonly T[,] matrix;
+        private readonly T[] matrix;
 
         /// <summary>
         /// Initializes new instance of <see cref="SquareMatrix{T}"/> with
@@ -27,7 +27,7 @@ namespace Task1.Logic
         public SquareMatrix(int dimension)
         {
             Dimension = dimension;
-            matrix = new T[dimension, dimension];
+            matrix = new T[dimension * dimension];
         }
 
         /// <summary>
@@ -44,10 +44,10 @@ namespace Task1.Logic
             Dimension = matrix.GetLength(0);
             if (matrix.GetLength(1) != Dimension)
                 throw new ArgumentException($"{nameof(matrix)} is not square matrix");
-            this.matrix = new T[Dimension, Dimension];
+            this.matrix = new T[Dimension * Dimension];
             for (int i = 0; i < Dimension; i++)
                 for (int j = 0; j < Dimension; j++)
-                    this.matrix[i, j] = matrix[i, j];
+                    this[i, j] = matrix[i, j];
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace Task1.Logic
         /// </summary>
         protected override void SetElement(T element, int row, int column)
         {
-            matrix[row, column] = element;
+            matrix[row * Dimension + column] = element;
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace Task1.Logic
         /// </summary>
         protected override T GetElement(int row, int column)
         {
-            return matrix[row, column];
+            return matrix[row * Dimension + column];
         }
     }
 }
