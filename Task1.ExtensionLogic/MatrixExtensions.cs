@@ -46,7 +46,7 @@ namespace Task1.ExtensionLogic
             catch (RuntimeBinderException rbe)
             {
                 throw new MatrixExtensionsException
-                    ($"Elements of type {typeof(T)} does not support operator+");
+                    ($"Elements of type {typeof(T)} does not support operator+", rbe);
             }
             return result;
         }
@@ -78,7 +78,7 @@ namespace Task1.ExtensionLogic
             catch (RuntimeBinderException rbe)
             {
                 throw new MatrixExtensionsException
-                    ($"Elements of type {typeof(T)} does not support operator+");
+                    ($"Elements of type {typeof(T)} does not support operator+", rbe);
             }
             return result;
         }
@@ -118,7 +118,7 @@ namespace Task1.ExtensionLogic
             catch (RuntimeBinderException rbe)
             {
                 throw new MatrixExtensionsException
-                    ($"Elements of type {typeof(T)} does not support operator+");
+                    ($"Elements of type {typeof(T)} does not support operator+", rbe);
             }
             return result;
         }
