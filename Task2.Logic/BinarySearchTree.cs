@@ -12,13 +12,13 @@ namespace Task2.Logic
     /// Class provides functionallity of binary search tree
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class BinarySearchTree<T> : ICollection<T>
+    public sealed class BinarySearchTree<T> : ICollection<T>
     {
         /// <summary>
         /// Count of elements 
         /// </summary>
         public int Count { get; private set; }
-        public virtual bool IsReadOnly => false;
+        public bool IsReadOnly => false;
 
         /// <summary>
         /// Custom comparer can be provided
@@ -35,8 +35,13 @@ namespace Task2.Logic
         /// </summary>
         /// <param name="comparer">If not specified, default comparer
         /// will be used</param>
+        /// <exception cref="BinarySearchTreeException">Throws if type <see cref="T"/>
+        /// neither implements <see cref="IComparable{T}"/> 
+        /// nor <see cref="IComparable"/></exception>
         public BinarySearchTree(IComparer<T> comparer = null)
         {
+            if (ReferenceEquals(comparer, null))
+                ValidateType();
             root = null;
             Count = 0;
             this.comparer = comparer ?? Comparer<T>.Default;
@@ -62,8 +67,9 @@ namespace Task2.Logic
         /// <param name="items">Items for binary tree</param>
         /// <exception cref="ArgumentNullException">Throws if <paramref name="items"/>
         /// parameter is null</exception>
-        /// <exception cref="BinarySearchTreeException">Throws if 
-        /// comparer can't compare current items type</exception>
+        /// <exception cref="BinarySearchTreeException">Throws if type <see cref="T"/>
+        /// neither implements <see cref="IComparable{T}"/> 
+        /// nor <see cref="IComparable"/> and <paramref name="comparer"/> is null</exception>
         public BinarySearchTree(IEnumerable<T> items, IComparer<T> comparer = null)
             : this(comparer)
         {
@@ -76,28 +82,22 @@ namespace Task2.Logic
         }
 
         /// <summary>
-        /// Adds new item to <see cref="BinarySearchTree{T}"/>
+        /// Adds new item to current <see cref="BinarySearchTree{T}"/>
         /// </summary>
-        /// <param name="item">iem to add</param>
-        /// <returns>true if <paramref name="item"/> was added in tree, otherwise 
-        /// returns false</returns>
-        /// <exception cref="BinarySearchTreeException">Throws if 
-        /// comparer can't compare current items type</exception>
-        public bool Add(T item)
+        /// <param name="item">item to add</param>
+        public void Add(T item)
         {
             if (ReferenceEquals(root, null))
             {
                 root = new Node<T> {Value = item};
                 Count++;
-                return true;
+                return;
             }
             Node<T> unusedParent;
-            Node<T> parentNode = FindItem(item, out unusedParent);
+            Node<T> parentNode = FindPotentialParent(item, out unusedParent);
             int compareResult = comparer.Compare(item, parentNode.Value);
-            if (compareResult == 0)
-                return false;
             Node<T> newNode = new Node<T> { Value = item };
-            if (compareResult > 0)
+            if (compareResult >= 0)
             {
                 parentNode.Right = newNode;
             }
@@ -106,7 +106,6 @@ namespace Task2.Logic
                 parentNode.Left = newNode;
             }
             Count++;
-            return true;
         }
 
         /// <summary>
@@ -124,15 +123,15 @@ namespace Task2.Logic
         /// <param name="item">item to search</param>
         /// <returns>true if <paramref name="item"/> is in current tree,
         /// otherwise returns false</returns>
-        /// <exception cref="BinarySearchTreeException">Throws if 
-        /// comparer can't compare current items type</exception>
         public bool Contains(T item)
         {
+            if (ReferenceEquals(root, null))
+                return false;
             Node<T> unusedParent;
-            Node<T> foundedNode = FindItem(item, out unusedParent);
-            if (comparer.Compare(foundedNode.Value, item) == 0)
-                return true;
-            return false;
+            Node<T> founded = FindItem(item, out unusedParent);
+            if (ReferenceEquals(founded, null))
+                return false;
+            return true;
         }
 
         /// <summary>
@@ -171,15 +170,13 @@ namespace Task2.Logic
         /// <param name="item"></param>
         /// <returns>true if <paramref name="item"/> successfully removed from 
         /// the current tree. Otherwise returns false</returns>
-        /// <exception cref="BinarySearchTreeException">Throws if 
-        /// comparer does not specified to current items type</exception>
         public bool Remove(T item)
         {
             if (root == null)
                 return false;
             Node<T> parentNode;
             Node<T> foundedNode = FindItem(item, out parentNode);
-            if (comparer.Compare(foundedNode.Value, item) != 0)
+            if (ReferenceEquals(foundedNode, null))
                 return false;
             //if removing node has not left son
             if (ReferenceEquals(foundedNode.Left, null))
@@ -211,7 +208,7 @@ namespace Task2.Logic
                     Count--;
                     return true;
                 }
-                if (foundedNode == parentNode.Left)
+                if (ReferenceEquals(foundedNode, parentNode.Left))
                 {
                     parentNode.Left = foundedNode.Left;
                 }
@@ -229,7 +226,7 @@ namespace Task2.Logic
                 parentSwapNode = currentNodeToSwap;
                 currentNodeToSwap = currentNodeToSwap.Left;
             }
-            if (ReferenceEquals(parentNode, null))
+            if (ReferenceEquals(root, foundedNode))
             {
                 root = currentNodeToSwap;
             }
@@ -242,15 +239,12 @@ namespace Task2.Logic
                 parentNode.Right = currentNodeToSwap;
             }
             if (ReferenceEquals(parentSwapNode.Left, currentNodeToSwap))
-            {
                 parentSwapNode.Left = currentNodeToSwap.Right;
-            }
             else
-            {
                 parentSwapNode.Right = currentNodeToSwap.Right;
-            }
             currentNodeToSwap.Left = foundedNode.Left;
             currentNodeToSwap.Right = foundedNode.Right;
+            
             Count--;
             return true;
         }
@@ -263,15 +257,9 @@ namespace Task2.Logic
         {
             if (ReferenceEquals(root, null))
                 yield break;
-            Stack<Node<T>> nodesStack = new Stack<Node<T>>(new[] {root});
-            while (nodesStack.Count != 0)
+            foreach (var item in GetPreorderEnumerator(root))
             {
-                Node<T> current = nodesStack.Pop();
-                yield return current.Value;
-                if (!ReferenceEquals(current.Right, null))
-                    nodesStack.Push(current.Right);
-                if (!ReferenceEquals(current.Left, null))
-                    nodesStack.Push(current.Left);
+                yield return item;
             }
         }
 
@@ -283,51 +271,9 @@ namespace Task2.Logic
         {
             if (ReferenceEquals(root, null))
                 yield break;
-            Stack<Node<T>> leftStack = new Stack<Node<T>>(new[] {root});
-            Stack<Node<T>> centerStack = new Stack<Node<T>>();
-            Stack<Node<T>> rightStack = new Stack<Node<T>>();
-            while (true)
+            foreach (var item in GetInorderEnumerator(root))
             {
-                Node<T> current;
-                if (leftStack.Count != 0)
-                {
-                    current = leftStack.Pop();
-                    if (!ReferenceEquals(current.Left, null))
-                    {
-                        leftStack.Push(current.Left);
-                        centerStack.Push(current);
-                    }
-                    else
-                    {
-                        yield return current.Value;
-                        if (!ReferenceEquals(current.Right, null))
-                            rightStack.Push(current.Right);
-                    }
-                }
-                else if (rightStack.Count != 0)
-                {
-                    current = rightStack.Pop();
-                    if (!ReferenceEquals(current.Left, null))
-                    {
-                        centerStack.Push(current);
-                        leftStack.Push(current.Left);
-                    }
-                    else
-                    {
-                        yield return current.Value;
-                        if (current.Right != null)
-                            rightStack.Push(current.Right);
-                    }
-                }
-                else if (centerStack.Count != 0)
-                {
-                    current = centerStack.Pop();
-                    yield return current.Value;
-                    if (current.Right != null)
-                        rightStack.Push(current.Right);
-                }
-                else
-                    break;
+                yield return item;
             }
         }
 
@@ -339,19 +285,10 @@ namespace Task2.Logic
         {
             if (ReferenceEquals(root, null))
                 yield break;
-            Stack<Node<T>> nodesStack = new Stack<Node<T>>(new[] {root});
-            Stack<Node<T>> result = new Stack<Node<T>>();
-            while (nodesStack.Count != 0)
+            foreach (var item in GetPostorderEnumerator(root))
             {
-                Node<T> current = nodesStack.Pop();
-                result.Push(current);
-                if (!ReferenceEquals(current.Left, null))
-                    nodesStack.Push(current.Left);
-                if (!ReferenceEquals(current.Right, null))
-                    nodesStack.Push(current.Right);
+                yield return item;
             }
-            while (result.Count != 0)
-                yield return result.Pop().Value;
         }
 
         /// <summary>
@@ -369,43 +306,22 @@ namespace Task2.Logic
         }
 
         /// <summary>
-        /// Adds an <paramref name="item"/> in the current tree
-        /// </summary>
-        /// <param name="item"></param>
-        void ICollection<T>.Add(T item)
-        {
-            Add(item);
-        }
-
-        /// <summary>
-        /// Finds <paramref name="item"/> in the current tree, or potential parent
+        /// Finds potential parent
         /// of <paramref name="item"/>
         /// </summary>
         /// <param name="item">item to find</param>
         /// <param name="parent">parent of the founded item</param>
-        /// <returns>Reference to founded node</returns>
-        /// <exception cref="BinarySearchTreeException">Throws if 
-        /// comparer can't compare current items type</exception>
-        private Node<T> FindItem(T item, out Node<T> parent)
+        /// <returns>Reference to founded parent</returns>
+        private Node<T> FindPotentialParent(T item, out Node<T> parent)
         {
             parent = null;
             if (ReferenceEquals(root, null))
                 return root;
             Node<T> current = root;
-            int compareResult;
-            try
-            {
-                compareResult = comparer.Compare(item, current.Value);
-            }
-            catch (Exception ex)
-            {
-                throw new BinarySearchTreeException("Cannot compare two items", ex);
-            }
+            int compareResult = comparer.Compare(item, current.Value);
             while (true)
             {
-                if (compareResult == 0)
-                    return current;
-                if (compareResult > 0)
+                if (compareResult >= 0)
                 {
                     if (ReferenceEquals(current.Right, null))
                         return current;
@@ -424,10 +340,117 @@ namespace Task2.Logic
         }
 
         /// <summary>
+        /// Finds a node with item
+        /// of <paramref name="item"/>
+        /// </summary>
+        /// <param name="item">item to find</param>
+        /// <param name="parent">parent of the founded item</param>
+        /// <returns>Reference to founded node or null if not found</returns>
+        private Node<T> FindItem(T item, out Node<T> parent)
+        {
+            parent = null;
+            if (ReferenceEquals(root, null))
+                return null;
+            Node<T> current = root;
+            int compareResult = comparer.Compare(item, current.Value);
+            while (true)
+            {
+                if (compareResult == 0)
+                    return current;
+                if (compareResult > 0)
+                {
+                    if (ReferenceEquals(current.Right, null))
+                        return null;
+                    parent = current;
+                    current = current.Right;
+                }
+                else
+                {
+                    if (ReferenceEquals(current.Left, null))
+                        return null;
+                    parent = current;
+                    current = current.Left;
+                }
+                compareResult = comparer.Compare(item, current.Value);
+            }
+        }
+
+        /// <summary>
+        /// Returns enumerator which enumerates elements of the tree in preorder order
+        /// </summary>
+        /// <param name="current">Must be not null</param>
+        private IEnumerable<T> GetPreorderEnumerator(Node<T> current)
+        {
+            yield return current.Value;
+            if (!ReferenceEquals(current.Left, null))
+                foreach (var item in GetPreorderEnumerator(current.Left))
+                {
+                    yield return item;
+                }
+            if (!ReferenceEquals(current.Right, null))
+                foreach (var item in GetPreorderEnumerator(current.Right))
+                {
+                    yield return item;
+                }
+        }
+
+        /// <summary>
+        /// Returns enumerator which enumerates elements of the tree in inorder order
+        /// </summary>
+        /// <param name="current">Must be not null</param>
+        private IEnumerable<T> GetInorderEnumerator(Node<T> current)
+        {
+            if (!ReferenceEquals(current.Left, null))
+                foreach (var item in GetInorderEnumerator(current.Left))
+                {
+                    yield return item;
+                }
+            yield return current.Value;
+            if (!ReferenceEquals(current.Right, null))
+                foreach (var item in GetInorderEnumerator(current.Right))
+                {
+                    yield return item;
+                }
+        }
+
+        /// <summary>
+        /// Returns enumerator which enumerates elements of the tree in postorder order
+        /// </summary>
+        /// <param name="current">Must be not null</param>
+        private IEnumerable<T> GetPostorderEnumerator(Node<T> current)
+        {
+            if (!ReferenceEquals(current.Left, null))
+                foreach (var item in GetPostorderEnumerator(current.Left))
+                {
+                    yield return item;
+                }
+            if (!ReferenceEquals(current.Right, null))
+                foreach (var item in GetPostorderEnumerator(current.Right))
+                {
+                    yield return item;
+                }
+            yield return current.Value;
+        }
+
+        /// <summary>
+        /// Validates if elements of type <see cref="T"/> can be compared
+        /// </summary>
+        /// <exception cref="BinarySearchTreeException">Throws if type <see cref="T"/>
+        /// neither implements <see cref="IComparable{T}"/> 
+        /// nor <see cref="IComparable"/></exception>
+        private void ValidateType()
+        {
+            Type[] interfaces = typeof(T).GetInterfaces();
+            if (!interfaces.Contains(typeof(IComparable<T>)) && !interfaces.Contains(typeof(IComparable)))
+                throw new BinarySearchTreeException
+                    ($"Type {nameof(T)} does not implements IComparable or IComparable<{nameof(T)}>");
+        }
+
+        /// <summary>
         /// Node of the tree
         /// </summary>
         /// <typeparam name="TValue">Type of value which contains in node</typeparam>
-        protected class Node<TValue>
+        private class Node<TValue>
         {
             public TValue Value { get; set; }
             public Node<TValue> Left { get; set; }

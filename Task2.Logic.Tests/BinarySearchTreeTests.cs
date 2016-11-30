@@ -20,10 +20,14 @@ namespace Task2.Logic.Tests
         {
             get
             {
-                yield return new TestCaseData(new[] {1, 2, 2, 3, 4, -5, 10, 12}, 7,
-                    new[] {1, 2, 3, 4, -5, 10, 12}, new[] {0, 11, 9}, null);
-                yield return new TestCaseData(new[] {1, 2, 2, 3, 4, -5, 10, 12}, 7,
-                    new[] {1, 2, 3, 4, -5, 10, 12}, new[] {0, 11, 9}, new IntReverseComparer());
+                yield return new TestCaseData(
+                    new[] {1, 2, 2, 3, 4, -5, 10, 12}, 8,
+                    new[] {1, 2, 2, 3, 4, -5, 10, 12},
+                    new[] {0, 11, 9}, null);
+                yield return new TestCaseData(
+                    new[] {1, 2, 2, 3, 4, -5, 10, 12}, 8,
+                    new[] {1, 2, 2, 3, 4, -5, 10, 12},
+                    new[] {0, 11, 9}, new IntReverseComparer());
             }
         }
         
@@ -48,30 +52,28 @@ namespace Task2.Logic.Tests
         {
             get
             {
-                yield return new TestCaseData(new[] {1, 2, 2, 3, 3, 3, 4, -5, 10, 10, 12}, 7,
-                    new[] {1, 2, 3, 4, -5, 10, 12},
-                    new[] {true, true, false, true, false, false, true, true, true, false, true},
+                yield return new TestCaseData(new[] {1, 2, 2, 3, 3, 3, 4, -5, 10, 10, 12}, 11,
+                    new[] { 1, 2, 2, 3, 3, 3, 4, -5, 10, 10, 12 },
                     null);
-                yield return new TestCaseData(new[] {1, 2, 2, 3, 3, 3, 4, -5, 10, 10, 12}, 7,
-                    new[] {1, 2, 3, 4, -5, 10, 12},
-                    new[] {true, true, false, true, false, false, true, true, true, false, true},
+                yield return new TestCaseData(new[] {1, 2, 2, 3, 3, 3, 4, -5, 10, 10, 12}, 11,
+                    new[] { 1, 2, 2, 3, 3, 3, 4, -5, 10, 10, 12 },
                     new IntReverseComparer());
             }
         }
         [TestCaseSource(nameof(AddTestData))]
         [Test]
         public void Add_IntArray_TrueFalseResultsExpected
-            (int[] dataArray, int expextedSize, int[] expectedData, bool[] expectedResults,
+            (int[] dataArray, int expectedSize, int[] expectedData,
             IComparer<int> comparer)
         {
             //arrange
             BinarySearchTree<int> tree = new BinarySearchTree<int>(comparer);
             //act-assert
-            for (int i = 0; i < dataArray.Length; i++)
+            foreach (int t in dataArray)
             {
-                bool actual = tree.Add(dataArray[i]);
-                Assert.AreEqual(expectedResults[i], actual);
+                tree.Add(t);
             }
+            Assert.AreEqual(expectedSize, tree.Count);
             CollectionAssert.AreEquivalent(expectedData, tree);
         }
         
@@ -165,8 +167,10 @@ namespace Task2.Logic.Tests
         {
             get
             {
-                yield return new TestCaseData(new[] {20, 10, 30, 5, 15, 35, 3, 8, 33}, 4,
-                    new[] {20, 10, 15, 30, 35}, new[] {5, 3, 33, 8}, null);
+                yield return new TestCaseData(
+                    new[] {20, 10, 30, 5, 15, 35, 3, 8, 33}, 4,
+                    new[] {20, 10, 15, 30, 35}, 
+                    new[] {5, 3, 33, 8}, null);
                 yield return new TestCaseData(new[] {20, 10, 30, 5, 15, 35, 3, 8, 33}, 4,
                     new[] {20, 10, 15, 30, 35}, new[] {5, 3, 33, 8},
                     new IntReverseComparer());
@@ -324,10 +328,14 @@ namespace Task2.Logic.Tests
         {
             get
             {
-                yield return new TestCaseData(new[] { "aa", "ab", "ad", "ab", "aab", "ad" }, 4,
-                    new[] { "aa", "ab", "aab", "ad" }, new[] { "bc", "adf" }, null);
-                yield return new TestCaseData(new[] { "aa", "ab", "ad", "ab", "aab", "ad" }, 4,
-                    new[] { "aa", "ab", "aab", "ad" }, new[] { "bc", "adf" }, 
+                yield return new TestCaseData(
+                    new[] { "aa", "ab", "ad", "ab", "aab", "ad" }, 6,
+                    new[] { "aa", "ab", "ad", "ab", "aab", "ad" },
+                    new[] { "bc", "adf" }, null);
+                yield return new TestCaseData(
+                    new[] { "aa", "ab", "ad", "ab", "aab", "ad" }, 6,
+                    new[] { "aa", "ab", "ad", "ab", "aab", "ad" },
+                    new[] { "bc", "adf" }, 
                     new StringCustomComparer());
             }
         }
@@ -353,30 +361,28 @@ namespace Task2.Logic.Tests
         {
             get
             {
-                yield return new TestCaseData(new[] { "aa", "ab", "ad", "ab", "aab", "ad" }, 4,
-                    new[] { "aa", "ab", "aab", "ad" },
-                    new[] { true, true, true, false, true, false },
+                yield return new TestCaseData(new[] { "aa", "ab", "ad", "ab", "aab", "ad" }, 6,
+                    new[] { "aa", "ab", "ad", "ab", "aab", "ad" },
                     null);
-                yield return new TestCaseData(new[] { "aa", "ab", "ad", "ab", "aab", "ad" }, 4,
-                    new[] { "aa", "ab", "aab", "ad" },
-                    new[] { true, true, true, false, true, false },
+                yield return new TestCaseData(new[] { "aa", "ab", "ad", "ab", "aab", "ad" }, 6,
+                    new[] { "aa", "ab", "ad", "ab", "aab", "ad" },
                     new StringCustomComparer());
             }
         }
         [TestCaseSource(nameof(AddStringTestData))]
         [Test]
         public void Add_StringArray_TrueFalseResultsExpected
-            (string[] dataArray, int expextedSize, string[] expectedData, bool[] expectedResults,
+            (string[] dataArray, int expectedSize, string[] expectedData,
             IComparer<string> comparer)
         {
             //arrange
             BinarySearchTree<string> tree = new BinarySearchTree<string>(comparer);
             //act-assert
-            for (int i = 0; i < dataArray.Length; i++)
+            foreach (string t in dataArray)
             {
-                bool actual = tree.Add(dataArray[i]);
-                Assert.AreEqual(expectedResults[i], actual);
+                tree.Add(t);
             }
+            Assert.AreEqual(expectedSize, tree.Count);
             CollectionAssert.AreEquivalent(expectedData, tree);
         }
 
@@ -634,10 +640,14 @@ namespace Task2.Logic.Tests
         {
             get
             {
-                yield return new TestCaseData(new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("ad", "ad", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) }, 4,
-                    new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) }, new[] { new Book("bc", "bc", 2016, 12m), new Book("adf", "adf", 2016, 12m) }, null);
-                yield return new TestCaseData(new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("ad", "ad", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) }, 4,
-                    new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) }, new[] { new Book("bc", "bc", 2016, 12m), new Book("adf", "adf", 2016, 12m) },
+                yield return new TestCaseData(
+                    new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("ad", "ad", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) }, 6,
+                    new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("ad", "ad", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) }, 
+                    new[] { new Book("bc", "bc", 2016, 12m), new Book("adf", "adf", 2016, 12m) }, null);
+                yield return new TestCaseData(
+                    new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("ad", "ad", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) }, 6,
+                    new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("ad", "ad", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) },
+                    new[] { new Book("bc", "bc", 2016, 12m), new Book("adf", "adf", 2016, 12m) },
                     new BookCustomComparer());
             }
         }
@@ -663,30 +673,30 @@ namespace Task2.Logic.Tests
         {
             get
             {
-                yield return new TestCaseData(new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("ad", "ad", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) }, 4,
-                    new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) },
-                    new[] { true, true, true, false, true, false },
+                yield return new TestCaseData(
+                    new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("ad", "ad", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) }, 6,
+                    new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("ad", "ad", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) },
                     null);
-                yield return new TestCaseData(new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("ad", "ad", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) }, 4,
-                    new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) },
-                    new[] { true, true, true, false, true, false },
+                yield return new TestCaseData(
+                    new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("ad", "ad", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) }, 6,
+                    new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("ad", "ad", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) },
                     new BookCustomComparer());
             }
         }
         [TestCaseSource(nameof(AddBookTestData))]
         [Test]
         public void Add_BookArray_TrueFalseResultsExpected
-            (Book[] dataArray, int expextedSize, Book[] expectedData, bool[] expectedResults,
+            (Book[] dataArray, int expectedSize, Book[] expectedData,
             IComparer<Book> comparer)
         {
             //arrange
             BinarySearchTree<Book> tree = new BinarySearchTree<Book>(comparer);
             //act-assert
-            for (int i = 0; i < dataArray.Length; i++)
+            foreach (Book t in dataArray)
             {
-                bool actual = tree.Add(dataArray[i]);
-                Assert.AreEqual(expectedResults[i], actual);
+                tree.Add(t);
             }
+            Assert.AreEqual(expectedSize, tree.Count);
             CollectionAssert.AreEquivalent(expectedData, tree);
         }
 
@@ -726,10 +736,11 @@ namespace Task2.Logic.Tests
         {
             get
             {
-                yield return new TestCaseData(new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("ad", "ad", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) }, 0,
+                yield return new TestCaseData(
+                    new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("ad", "ad", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) }, 6,
                     new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m), new Book("haha", "haha", 2016, 12m), new Book("lol", "lol", 2016, 12m) },
                     new[] { true, true, true, true, false, false }, null);
-                yield return new TestCaseData(new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("ad", "ad", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) }, 0,
+                yield return new TestCaseData(new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("ad", "ad", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m) }, 6,
                     new[] { new Book("aa", "aa", 2016, 12m), new Book("ab", "ab", 2016, 12m), new Book("aab", "aab", 2016, 12m), new Book("ad", "ad", 2016, 12m), new Book("haha", "haha", 2016, 12m), new Book("lol", "lol", 2016, 12m) },
                     new[] { true, true, true, true, false, false },
                     new BookCustomComparer());
@@ -744,6 +755,7 @@ namespace Task2.Logic.Tests
             //arrange
             BinarySearchTree<Book> tree = new BinarySearchTree<Book>(dataArray, comparer);
             //assert
+            Assert.AreEqual(expextedSize, tree.Count);
             for (int i = 0; i < testData.Length; i++)
             {
                 bool actual = tree.Contains(testData[i]);
@@ -785,10 +797,14 @@ namespace Task2.Logic.Tests
         {
             get
             {
-                yield return new TestCaseData(new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m) }, 4,
-                    new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("15", "15", 2016, 15m), new Book("30", "30", 2016, 30m), new Book("35", "35", 2016, 35m) }, new[] { new Book("5", "5", 2016, 5m), new Book("3", "3", 2016, 3m), new Book("33", "33", 2016, 33m), new Book("8", "8", 2016, 8m) }, null);
-                yield return new TestCaseData(new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m) }, 4,
-                    new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("15", "15", 2016, 15m), new Book("30", "30", 2016, 30m), new Book("35", "35", 2016, 35m) }, new[] { new Book("5", "5", 2016, 5m), new Book("3", "3", 2016, 3m), new Book("33", "33", 2016, 33m), new Book("8", "8", 2016, 8m) },
+                yield return new TestCaseData(
+                    new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m) }, 4,
+                    new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("15", "15", 2016, 15m), new Book("30", "30", 2016, 30m), new Book("35", "35", 2016, 35m) }, 
+                    new[] { new Book("5", "5", 2016, 5m), new Book("3", "3", 2016, 3m), new Book("33", "33", 2016, 33m), new Book("8", "8", 2016, 8m) }, null);
+                yield return new TestCaseData(
+                    new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m) }, 4,
+                    new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("15", "15", 2016, 15m), new Book("30", "30", 2016, 30m), new Book("35", "35", 2016, 35m) }, 
+                    new[] { new Book("5", "5", 2016, 5m), new Book("3", "3", 2016, 3m), new Book("33", "33", 2016, 33m), new Book("8", "8", 2016, 8m) },
                     new BookCustomComparer());
                 yield return new TestCaseData(new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("8", "8", 2016, 8m), new Book("33", "33", 2016, 33m) }, 8,
                     new[] { new Book("8", "8", 2016, 8m) }, new[] { new Book("20", "20", 2016, 20m), new Book("10", "10", 2016, 10m), new Book("30", "30", 2016, 30m), new Book("5", "5", 2016, 5m), new Book("15", "15", 2016, 15m), new Book("35", "35", 2016, 35m), new Book("3", "3", 2016, 3m), new Book("33", "33", 2016, 33m) }, null);
@@ -973,10 +989,14 @@ namespace Task2.Logic.Tests
         {
             get
             {
-                yield return new TestCaseData(new[] { new Point(1, 1), new Point(2, 2), new Point(2, 2), new Point(3, 3), new Point(4, 4), new Point(-5, -5), new Point(10, 10), new Point(12, 12) }, 7,
-                    new[] { new Point(1, 1), new Point(2, 2), new Point(3, 3), new Point(4, 4), new Point(-5, -5), new Point(10, 10), new Point(12, 12) }, new[] { new Point(0, 0), new Point(11, 11), new Point(9, 9) }, new PointOrderComparer());
-                yield return new TestCaseData(new[] { new Point(1, 1), new Point(2, 2), new Point(2, 2), new Point(3, 3), new Point(4, 4), new Point(-5, -5), new Point(10, 10), new Point(12, 12) }, 7,
-                    new[] { new Point(1, 1), new Point(2, 2), new Point(3, 3), new Point(4, 4), new Point(-5, -5), new Point(10, 10), new Point(12, 12) }, new[] { new Point(0, 0), new Point(11, 11), new Point(9, 9) }, new PointReverseComparer());
+                yield return new TestCaseData(
+                    new[] { new Point(1, 1), new Point(2, 2), new Point(2, 2), new Point(3, 3), new Point(4, 4), new Point(-5, -5), new Point(10, 10), new Point(12, 12) }, 8,
+                    new[] { new Point(1, 1), new Point(2, 2), new Point(2, 2), new Point(3, 3), new Point(4, 4), new Point(-5, -5), new Point(10, 10), new Point(12, 12) },
+                    new[] { new Point(0, 0), new Point(11, 11), new Point(9, 9) }, new PointOrderComparer());
+                yield return new TestCaseData(
+                    new[] { new Point(1, 1), new Point(2, 2), new Point(2, 2), new Point(3, 3), new Point(4, 4), new Point(-5, -5), new Point(10, 10), new Point(12, 12) }, 8,
+                    new[] { new Point(1, 1), new Point(2, 2), new Point(2, 2), new Point(3, 3), new Point(4, 4), new Point(-5, -5), new Point(10, 10), new Point(12, 12) },
+                    new[] { new Point(0, 0), new Point(11, 11), new Point(9, 9) }, new PointReverseComparer());
             }
         }
 
@@ -1001,30 +1021,28 @@ namespace Task2.Logic.Tests
         {
             get
             {
-                yield return new TestCaseData(new[] { new Point(1, 1), new Point(2, 2), new Point(2, 2), new Point(3, 3), new Point(3, 3), new Point(3, 3), new Point(4, 4), new Point(-5, -5), new Point(10, 10), new Point(10, 10), new Point(12, 12) }, 7,
-                    new[] { new Point(1, 1), new Point(2, 2), new Point(3, 3), new Point(4, 4), new Point(-5, -5), new Point(10, 10), new Point(12, 12) },
-                    new[] { true, true, false, true, false, false, true, true, true, false, true },
+                yield return new TestCaseData(new[] { new Point(1, 1), new Point(2, 2), new Point(2, 2), new Point(3, 3), new Point(3, 3), new Point(3, 3), new Point(4, 4), new Point(-5, -5), new Point(10, 10), new Point(10, 10), new Point(12, 12) }, 11,
+                    new[] { new Point(1, 1), new Point(2, 2), new Point(2, 2), new Point(3, 3), new Point(3, 3), new Point(3, 3), new Point(4, 4), new Point(-5, -5), new Point(10, 10), new Point(10, 10), new Point(12, 12) },
                     new PointOrderComparer());
-                yield return new TestCaseData(new[] { new Point(1, 1), new Point(2, 2), new Point(2, 2), new Point(3, 3), new Point(3, 3), new Point(3, 3), new Point(4, 4), new Point(-5, -5), new Point(10, 10), new Point(10, 10), new Point(12, 12) }, 7,
-                    new[] { new Point(1, 1), new Point(2, 2), new Point(3, 3), new Point(4, 4), new Point(-5, -5), new Point(10, 10), new Point(12, 12) },
-                    new[] { true, true, false, true, false, false, true, true, true, false, true },
+                yield return new TestCaseData(new[] { new Point(1, 1), new Point(2, 2), new Point(2, 2), new Point(3, 3), new Point(3, 3), new Point(3, 3), new Point(4, 4), new Point(-5, -5), new Point(10, 10), new Point(10, 10), new Point(12, 12) }, 11,
+                    new[] { new Point(1, 1), new Point(2, 2), new Point(2, 2), new Point(3, 3), new Point(3, 3), new Point(3, 3), new Point(4, 4), new Point(-5, -5), new Point(10, 10), new Point(10, 10), new Point(12, 12) },
                     new PointReverseComparer());
             }
         }
         [TestCaseSource(nameof(AddPointTestData))]
         [Test]
         public void Add_PointArray_TrueFalseResultsExpected
-            (Point[] dataArray, int expextedSize, Point[] expectedData, bool[] expectedResults,
+            (Point[] dataArray, int expectedSize, Point[] expectedData,
             IComparer<Point> comparer)
         {
             //arrange
             BinarySearchTree<Point> tree = new BinarySearchTree<Point>(comparer);
             //act-assert
-            for (int i = 0; i < dataArray.Length; i++)
+            foreach (Point t in dataArray)
             {
-                bool actual = tree.Add(dataArray[i]);
-                Assert.AreEqual(expectedResults[i], actual);
+                tree.Add(t);
             }
+            Assert.AreEqual(expectedSize, tree.Count);
             CollectionAssert.AreEquivalent(expectedData, tree);
         }
 
